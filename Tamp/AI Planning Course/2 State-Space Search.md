@@ -27,4 +27,19 @@
 **A\* 的效率最优性**：对特定的启发函数来说，没有算法可以比 A* 访问更少节点的情况下保证 Search 到 Goal 节点。
 
 A* Tree/Graph 搜索算法伪代码
-> **function**
+> **function** aStarTreeSearch($problem$, $h$)
+> - $fringe \leftarrow$ priorityQueue(**new** searchNode($problem$.initialState))
+> - $allNodes\leftarrow$ hashTable($fringe$)
+> - **loop**
+>   - **if** empty($fringe$) **then return** failure
+>   - $node \leftarrow$  selectFrom($fringe$)
+>   - **if** $problem$.goalTest($node.state$) **then**
+>       - **return** pathTo($node$)
+>   - **for** $successor$ **in** expand($problem$, $node$)
+>       - **if not** $allNodes$.contains($successor$) **then**
+>           - $fringe\leftarrow fringe+successor$ @f($successor$)
+>           - $allNodes$.add($successor$)
+
+上述算法里面与 hashtable 相关的内容是为了让算法适用于 Graph Search。
+
+A*算法的效率并不高，它的时间和空间复杂度都是 $O(b^l)$，$b$ 是每个节点平均的后继节点数，$l$ 是 path 的长度。

@@ -6,3 +6,6 @@
 - Parser
   - 基于[ANTLR v4](https://github.com/antlr/antlr4)开发 pddl parser，语法部分已经有人上传到了 [antlr grammar v4](https://github.com/antlr/grammars-v4/tree/master/pddl)
 - Solver
+
+## 想法
+- 用同一套机制来表示 Symbolic Environment 和 Kinematic Environment，只是提供这套机制的不同 View。
