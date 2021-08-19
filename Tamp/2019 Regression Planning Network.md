@@ -5,7 +5,7 @@
 - 从 observation space 直接 learning-to-plan 的方法。缺少对长时间维度任务的支持。
 - 传统的 Symbolic Planner，可以做到更长序列的 Task Plan。依赖于预定义的 symbolic rules and symbolic states，难以在现实场景中应用。
 
-本文给出的网络模型相当于在 Observation Space 中做 Task Plan （而不是 Motion Plan）。而采用的方法基本可以总结为，硬学，缺什么学什么，感觉和全背下来差不多。
+本文给出的网络模型相当于在 Observation Space 中做 Task Plan （而不是 Motion Plan）。而采用的方法基本可以总结为，把所有 predicates 转变成 one-hot 向量之后输入一个网络，输出结果重新解析成 predicates。
 
 ## Problem Definition
 文章看待 Task Plan 问题的角度也是基于视觉的，对于传统的 Task Plan 问题而言，整个系统常被建模成一个 State-Transition System （状态机）$\Sigma = (S, A, E, \gamma)$，系统的状态由 $s\in S$ 来定义，而 $s$ 通常是由人为定义的 predicates 来声明。最终的目标形式则可以认为是一个 goalTest 过程，也可以用 predicates 来声明。PDDL 也是基于这套叙事来设计的。

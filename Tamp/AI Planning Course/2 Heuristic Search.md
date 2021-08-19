@@ -43,3 +43,8 @@ A* Tree/Graph 搜索算法伪代码
 上述算法里面与 hashtable 相关的内容是为了让算法适用于 Graph Search。
 
 A*算法的效率并不高，它的时间和空间复杂度都是 $O(b^l)$，$b$ 是每个节点平均的后继节点数，$l$ 是 path 的长度。
+
+## Relexed Problem
+通过放宽原本 action 的限制，可以得到一个不同于原本问题的 Relexed Problem。而 Relexed Problem 的最优解肯定不会比原问题的最优解有更高的 cost ，毕竟限制都放宽松的，目标也应该更容易达到。
+
+所以一个 Relexed Problem 的 Cost 对于原问题来说，就是一个 Admissible 的 Heuristic Function。
