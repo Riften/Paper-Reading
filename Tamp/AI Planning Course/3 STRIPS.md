@@ -33,3 +33,4 @@ Transition Function $\gamma(s,a) = (s-\text{effects}^-(a)) \cup \text{effects}^+
 对于特定的 state $s$，以下算法用于寻找某种 operator $op$ 的所有 applicable 的 action $A$
 > **function** addApplicables($op$, $precs$, $\sigma$, $s$)
 > - $A \leftarrow \emptyset$ # 结果 action 数组
+> - **if** $precs$
