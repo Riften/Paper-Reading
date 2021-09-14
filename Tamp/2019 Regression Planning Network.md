@@ -40,6 +40,53 @@ RPN 模型的预测能力在于，根据环境的 observation，预测为了达�
 ### Subgoal Serialization
 本文将 goal 进行 subgoal 拆分就带来了不同 subgoal 的相容问题，执行某个特定 subgoal 的过程不能打破已经达到的其他 subgoal。本文同样采用学习的方式来达成 subgoal 的排序。
 
+## Data 数据形式
+### meta
+json 格式的数据集描述，内容包括
+- action_names: 可以采取的action，string list
+- object_ids: 场景中的 object，integer list
+- type_indices: `type_indices[i]` 是 object_id 为 `i+1` 的 object 的类型，integer list
+- types: 前面 type_indices 中不同序号对应的类型名称，string list
+- state_size：integer
+- num_action_args：action_names 中每种 action 的参数数量，integer list
+- unitary_predicates：单参数的 predicate
+- binary_predicates：双参数的 predicate
+- predicates：unitary_predicats + binary_predicates
+
+### DB
+实际的数据以 hdf5 group 的形式存放，其 item 包括
+```
+actions
+dependency_trace
+focus_trace
+goal_mask_trace
+goal_trace
+gt_state
+image_crops
+num_goal_entities
+num_object_types
+object_ids
+object_type_indices
+reachable_trace
+satisfied_trace
+symbolic_state
+task_id
+```
+
+## Net
+网络模型使用的是 `rpn/rpn_pb.py/VBP`，总体架构如下
+- ImageEncoder：卷积网络，输入RGB图片，输出feature。在整个网络中充当了从图像到状态的编码器。
+  - 卷积+降采样
+  - 全连接，将降采样后的图片 feature 直接作为向量输入，最终输出维度由参数指定，示例中为 32 维
+
+
+## Loss
+RPN 的 Loss 包含四部分
+- preimage_loss
+- reachable_loss
+- satisfied_loss
+- dependency_loss
+
 ## 问题
 - goal 如何作为 RPN 输入和输出？
 - 是否有 symbolic 的中间表示？
