@@ -34,11 +34,13 @@ Plan Refinement 是 plan-space search 中的边，将一个 partial plan 转变�
 - Adding Variable Bindings：Partial Plan 中的 Variable Binding 不仅仅局限于赋值，还可以是取值范围，或者 “和另一个变量相等” 这样的限制条件。Variable Binding 主要为了以下两个目的添加：
   - 为了将 operator 变成 solution 中的 action
   - 为了统一 provider 和 consumer 中的变量
-- Adding Ording Constraints：Ordering Constraints 是两个 action 在 partial plan 中的相对顺序。Ording Constraints 主要为了以下几个目的添加
+- Adding Ordering Constraints：Ordering Constraints 是两个 action 在 partial plan 中的相对顺序。Ordering Constraints 主要为了以下几个目的添加
   - 所有的 action 必须在 initial state 之后
   - 所有的 action 必须在 goal 之前
   - 由 causal link 的添加引入
   - 避免 action 的冲突，例如不要把会破坏 causal link 的 action 放在中间，或者在有相同参数的 action 之间添加 causal link 以避免同时执行他们。这和下面提到的 Treat 概念有关。
+
+
 
 ## Plan Space Search Problem
 ### Initial Search State
