@@ -20,6 +20,7 @@
 
 ## 我们的仓库
 - [rftask](https://github.com/mvig-robotflow/rftask): 当前代码，后续会重命名为 rfplanner
+- [rfpddl](https://github.com/mvig-robotflow/rfpddl): Programmable PDDL 实现，可以作为独立 package 使用
 - [Paper-Reading](https://github.com/Riften/Paper-Reading): 我的一部分论文阅读笔记，这个文档也在这个仓库里。
 
 之后会把 pddl 独立成单独仓库。
