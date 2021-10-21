@@ -1,4 +1,5 @@
 # Differentiable Physics and Stable Modes for Tool-Use and Manipulation Planning
+**LGP** 的论文。
 
 基本方案
 - 使用逻辑表达式表示物理相互关系，并且求解最优结果。在传统 Task Plan 中，逻辑表达式是状态描述和搜索的基础，而这里进一步用逻辑表达式直接描述物理关系。其实相当于 LGP 的 Task Plan 搜索空间更加底层。
@@ -8,5 +9,13 @@
 ### First-order logic
 一阶逻辑，也就是 PDDL 中使用的 predicate，以及 predicate 组成的 sentence。
 
+### Differentiable Physics
+
 ### CIO
 Contact-Invariant Optimization. 在 [Discovery of Complex Behaviors through Contact-Invariant Optimization](./2012%20Discovery%20of%20Complex%20Behaviors%20through%20Contact-Invariant%20Optimization.md) 中提出的一个自动生成 contact 关系和关节体动作的方案。
+
+## 问题定义
+LGP 解决的是以个优化问题，那么就包含两个部分，优化目标，限制条件
+
+### 优化目标
+
