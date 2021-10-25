@@ -2,6 +2,8 @@
 
 LGP 的基础工作。
 
+> Instead of trying to pull geometry into logic representations, we try to pull logic into mathematical programming.
+
 求解的问题目标并不是用 symbolic goal desciption 表示的，而是通过一个基于最终 geometric state 所构建的 cost function 给出的，从而能够通过优化的方式求解 TAMP 问题。
 
 这种方式使得本文提出的 Planner 可以处理一些现有方案难以解决的问题，例如文中给出的示例问题：给出一堆物体和一个杯子，把杯子堆到尽量高的位置。
@@ -13,3 +15,4 @@ Logic-Geometric Program 基本含义：
 - constraint function $g(x|\alpha): \mathcal{X}\rightarrow \mathbb{R}^{d(\alpha)}$, $h(x|\alpha): \mathcal{X}\rightarrow \mathbb{R}^{e(\alpha)}$
 
 $$\min_{x,\alpha}f(x, \alpha) \text{ s.t. } \alpha\models K, g(x,\alpha)\leq 0, h(x, \alpha) = 0$$
+

@@ -10,6 +10,10 @@
 
 其他这个目录里的文章感兴趣的话也可以瞅瞅。
 
+## 其他笔记
+- [AI Planning Course](./AI%20Planning%20Course/README.md): 爱丁堡大学 AI Planning 课程笔记
+- [Optimal Control](./Optimal%20Control/README.md): 最优控制相关学习笔记
+
 ## 工具
 - [ROS2 Tutorial](https://docs.ros.org/en/foxy/Tutorials.html): ROS2 的教程
 - [Moveit2 Tutorial](http://moveit2_tutorials.picknik.ai/): Motion Plan 库，初步可能直接使用 Moveit 的 Planning Scene 作为维护场景信息的数据结构
