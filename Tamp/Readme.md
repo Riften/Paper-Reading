@@ -2,6 +2,9 @@
 ## 链接
 - [Online Course: AI Planning - Univerty of Edinburgh （爱丁堡大学）](http://www.aiai.ed.ac.uk/project/plan/ooc/)：TASK Plan 的网课，基本算法打算直接实现这里面介绍的。
 - [Planning Wiki](https://planning.wiki/): PDDL 的 WIKI，包含 PDDL 语法的定义。
+- [Learning and Intelligent Systems Lab](https://argmin.lis.tu-berlin.de/): 柏林工业大学的实验室。
+- [Marc Toussaint 教授的课程](https://www.user.tu-berlin.de/mtoussai//teaching/index.html)
+  - [Optimization Algorithm 2020-2021](https://www.user.tu-berlin.de/mtoussai/teaching/20-Optimization/)
 
 ## 文章
 - [Integrated Task and Motion Planning](./2021%20Integrated%20Task%20and%20Motion%20Planning.md): TAMP 的 Survey
