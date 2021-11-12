@@ -11,3 +11,8 @@
 
 ## 求解方式
 RAI 实现了许多不同的接口类，例如 ConstrainedProblem，GraphProblem，KOMOProblem，这些问题会被转换成 non-linear mathematical problem。而 KOMO 提供了使用任意 non-linear mathematical problem solver 的接口。
+
+## KOMO Tutorial
+### Initialize
+- 指明 Kinematic Model `KOMO::setModel`: Model 是以 Configuration 的形式给出来的。
+- `KOMO::setTiming`: KOMO 中时间是离散化的，所以需要配置时间。$k$ 值的配置也在这里进行，因为 $k$ 指明了每个 objective 最多牵扯到多少个时间片的 Configuration。

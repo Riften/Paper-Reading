@@ -31,3 +31,15 @@ LGP 将 dofs 定义的更加广泛，所有数学求解过程中的决策变量�
 
 ### 速度表示
 LGP 中速度是由两个 Configuration 差异来表示的，这也顺应了优化系统对时间离散化的需求。为了以优化的方式求解控制问题，通常需要三个 Configuration，$t$ 时刻和 $t-\tau$ 时刻的 Configuration 代表了当前 State。而 $t+\tau$ 时刻的 Configuration 则是优化目标。
+
+## Mathematical Problem 的构建
+Mathematical Problem 的接口定义在 `rai/Optim/MathematicalProgram.h`，这是一个纯虚类，所有实际的问题需要继承这个类。
+
+### Conv_KOMO_SparseNonfactored
+
+## Optimizer
+
+
+## LGP 的局限性
+- 所有 kinematic, model, task 等信息都通过 `.g` 文件以 graph 的形式描述，粗暴，同时也难以和其他系统共用，相对闭源。
+
