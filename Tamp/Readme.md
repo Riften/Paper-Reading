@@ -5,6 +5,7 @@
 - [Learning and Intelligent Systems Lab](https://argmin.lis.tu-berlin.de/): 柏林工业大学的实验室。
 - [Marc Toussaint 教授的课程](https://www.user.tu-berlin.de/mtoussai//teaching/index.html)
   - [Optimization Algorithm 2020-2021](https://www.user.tu-berlin.de/mtoussai/teaching/20-Optimization/)
+- [一些其他学习资料](https://pybullet.org/Bullet/phpBB3/viewtopic.php?f=6&t=63)：Bullet 论坛里有人整理的一些和物理引擎相关的学习资料。
 
 ## 文章
 - [Integrated Task and Motion Planning](./2021%20Integrated%20Task%20and%20Motion%20Planning.md): TAMP 的 Survey

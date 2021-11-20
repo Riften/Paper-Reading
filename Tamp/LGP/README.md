@@ -1,4 +1,6 @@
 # Logic-Geometric Programming
+- [Robotics Course](https://marctoussaint.github.io/robotics-course/simlab.html): 看上去是 Marc Toussaint 为 lab 快速上手 RAI 相关 Code 所写的文档。
+- [Github: RAI maintenance](https://github.com/MarcToussaint/rai-maintenance)： 编译 RAI 需要的一些辅助脚本，以及一些简单的概念介绍文档。
 
 ## Install
 Ubuntu 可以直接通过 `make -j1 installUbuntuAll` 安装依赖，但是缺少了 GLFW3
