@@ -1,6 +1,8 @@
 # Linear complementarity problem 线性互补问题
 严格求解系统中多个刚体的碰撞问题构成了一个线性互补问题，如果还存在等式约束，则构成了一个 Mixed Linear Complementarity Problem
 
+MuJoCo 的一个创新点就是求解了 LCP 的近似，而不是精确 LCP。
+
 ## 基本形式
 给定实矩阵 $M$，求两个向量 $w,z$ 满足：
 - $w,z\geq 0$，这里指的是向量每个分量都 $\geq 0$
