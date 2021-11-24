@@ -35,13 +35,14 @@
 
 ## 计划
 - [ ] Physics Interface: 面向可微引擎设计的接口类
-  - [ ] 控制类接口
-  - [ ] 查询类接口
+  - [x] JointGroup: Motion Plan 和 Control 的基本单位
 - [ ] OMPL 使用，能够做简单地 Sample Based Motion Plan
   - [x] mujoco 简单的测试场景，包含 franka 和障碍物
-  - [ ] 对 mujoco 进行 collision check
+  - [x] 对 mujoco 进行 collision check
+  - [ ] 基于 JointGroup 的 OMPL State 定义
 - [ ] mujoco 中机器人的基本控制。
   - [x] 基本的阻抗控制 impedance control。
     - [ ] 惯性矩分量计算，避免过大加速度
+  - [ ] JointGroup 的控制
 - [ ] Optimization 问题构建
 - [ ] 环境交互
