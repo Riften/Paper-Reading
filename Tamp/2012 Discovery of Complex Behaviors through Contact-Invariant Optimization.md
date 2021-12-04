@@ -1,4 +1,6 @@
 # Discovery of Complex Behaviors through Contact-Invariant Optimization
+- [Video](https://www.youtube.com/watch?v=mhr_jtQrhVA)
+
 用 CIO 来生成复杂行为（动作），可以是人的动作，也可以是任何其他可动形体的动作。
 
 文章最终解决的问题是动作的自动合成（automated synthesis），期望在不提供关键帧、轨迹、运动细节等知识的情况下，自动合成所有人体可以执行的行为动作。之所以用 behavior 是因为这里的行为还包含了与环境或者其他形体的接触交互。

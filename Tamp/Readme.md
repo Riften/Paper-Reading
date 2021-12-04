@@ -33,16 +33,71 @@
 
 之后会把 pddl 独立成单独仓库。
 
-## 计划
+## 现有 TAMP 系统
+
+名称 | 底层 | 备注 | 核心不足
+-- | -- | -- | --
+Moveit | Planning Scene | 只包括 Kinematic 信息，提供通用 Planner 接口。实际算法需要实现自己的 Planning Context。| Planning Scene 本身表示能力不足，添加 Dynamics 能力和重新开发没啥区别。
+LGP | KOMO | 可以求解 Dynamics 问题，代码相对独立，实现了将不同问题转化为2阶或者3阶优化问题，并用通用求解器求解。| 不是所有问题都能转化为 KOMO。
+TrajOpt | OpenRAVE | 基于优化的 Motion Plan 算法，由于算法本身特性，from scratch 的求解 trajectory 可能失败。| 优化方法本身的局限性。OpenRAVE 的复杂环境。
+PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作为一个可以求解连续值的 action。 | 不关心算法实现，Stream 实际上依赖于人为设定。
+
+## 目标
+让 TAMP 可以求解 Dynamic 问题。
+
+典型 Dynamic 问题
+
+- throw，kick 一类的动作
+- 稳定的抓取等 contact 姿态
+
+常见的 Dynamic 信息
+
+- Inertia
+- Jacobian
+- Contact
+
+### 计划和进度
+
+**开发**
+
 - [ ] Physics Interface: 面向可微引擎设计的接口类
   - [x] JointGroup: Motion Plan 和 Control 的基本单位
 - [ ] OMPL 使用，能够做简单地 Sample Based Motion Plan
   - [x] mujoco 简单的测试场景，包含 franka 和障碍物
   - [x] 对 mujoco 进行 collision check
-  - [ ] 基于 JointGroup 的 OMPL State 定义
+  - [ ] Thread Safe
+    - [ ] Simulator pool
+  - [ ] State Space
+    - [x] 简单地 RealVectorStateSpace 使用
+    - [x] 用 Simple Setup 实现 motion plan
+    - [ ] KinematicChainSpace 的实现 [OMPL KinematicChainBenchmark](https://ompl.kavrakilab.org/KinematicChainBenchmark_8cpp_source.html)
+  - [x] StateValidityChecker
+  - [x] Inverse Kinematics
+    - [x] mjModel -> Kinematic Info
+    - [x] KDL Kinematic Tree 构建
+    - [x] Forward Kinematics 计算和检验
+    - [x] 求解 IK
+      - [ ] 跨越 limit 时出现的 bug
+    - [ ] mocap 拖动
 - [ ] mujoco 中机器人的基本控制。
   - [x] 基本的阻抗控制 impedance control。
     - [ ] 惯性矩分量计算，避免过大加速度
   - [ ] JointGroup 的控制
+  - [ ] 基于速度的控制
 - [ ] Optimization 问题构建
+  - [ ] Trajectory Optimization: 参考 TrajOpt
+  - [ ] Contact(Switch) Optimization：参考 LGP （CIO）
+    - [ ] 调研 CIO 的 Matlab 实现
 - [ ] 环境交互
+
+**学习**
+
+- Trajectory Optimization
+- Contact Invariant Optimization (Motion Synthesis)
+
+**目标**
+- [ ] 周 12.3 Sample Based Motion Plan
+  - [ ] MuJoCo: Thread Safe Simulator Pool
+  - [ ] OMPL: Real Value State Space
+  - [ ] OMPL: StateValidityChecker
+- [ ] 月 元旦 Contact Invariant Optimization

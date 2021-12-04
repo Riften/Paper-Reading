@@ -7,6 +7,8 @@
 - `int * mjModel::jnt_qposadr`: 是一个 index 的数组，`jnt_qposadr[joint_id]` 特定 joint 在 qpos 数组中的 start index
   - 查询某个名字的 joint 的 pos: `mjData.qpos[mjModel.jntqposadr[mj_name2id(mjModel, type, joint_name)]]`
 - `int * mjModel::jnt_dofadr`：和上面类似，是在 qvel 数组中的 start index
+- 对于 size 为 (N x M) 的多个数组，mujoco 直接将其按行顺序存到一个数组里。
+  - 例如 `mjtNum * mjModel::body_pos` 的 size 为 (nbody x 3)，则特定 id 的 body pos 为 `body_pos[body_id*3, body_id*3 + 3]`
 
 
 ## 刚体的 Bodies, geoms, sites
