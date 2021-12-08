@@ -14,3 +14,19 @@ Contact 变量还与 dynamics 直接相关，只有当 $c_i$ 足够大时，才�
 另外，在通常的基于优化的运动生成策略中，优化的空间是 joint configuration，最终的 end-effector 是通过 FK 算出来的。而在本文中，优化空间直接是 end-effector，joint configuration 是通过 IK 算出来的。
 
 ## 具体方案
+- $s$: Solution，可以有不同的形式，例如一个 Configuration 序列，或者一个 Configuration 的 splines。本文中 Configuration 仅仅包含 end effector 的 pose，使用 spline 作为 solution 形式
+
+### Contact Violation Vector & Contact Invariant Cost
+$e_{i,t}$ 代表 end-effector $i$ 在时间 $t$ 和环境的 Contact Violation Vector
+- 前三维代表和环境中最近点的距离
+- 最后一维代表 end effector 和 最近点 的 surface normal 的夹角。
+
+定义 auxiliary variable $c_{i,\phi(t)}$ 代表 contact 变量，该变量越大，意味着其对应的 contact 应当存在。$i$ 和 end effector 的 id 一致，换言之对每个 end effector 有对应的 contact 变量。$\phi(t)$ 是 时间$t$ 所属的 phrase。每个 phrase 中，一个 contact 要么一直存在，要么一直不存在，所以用 $\phi(t)$ 区分不同 phrase 的 contact 变量。
+
+Contact Invariant Cost:
+
+$$L_{CI}(s) = \sum_{t}c_{i,\phi(t)}(s)\large(\normalsize\lVert e_{i,t}(s)\rVert^2+\lVert\dot{e}_{i,t}(s)\rVert^2\large)$$
+
+在优化问题中，这里的 $e$ 和 $c$ 都是优化的变量，$e$ 是 end effector $i$ 的 pose $q_{i,t}(s)$ 的函数。如果没有其他限制，最小化 $L_{CI}$ 的结果是所有变量都为 0。
+
+当优化问题发现想要达成某个条件，需要施加某个 contact force 的时候，就需要相应的 $c_i$ 足够大，这时候最小化 $L_{CI}$ 的结果就是 $e=0$，也就是移动到 contact 发生位置。

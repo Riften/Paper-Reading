@@ -1,4 +1,4 @@
-# Optimization
+# Unconstrained (Convex) Optimization
 优化问题的通用形式
 
 $x\in \mathbb{R}^n$, $f: \mathbb{R}\rightarrow\mathbb{R}$, $g: \mathbb{R}^n\rightarrow \mathbb{R}^m$, $h: \mathbb{R}^n\rightarrow \mathbb{R}^l$ Find
@@ -13,22 +13,37 @@ $$\begin{aligned}
 - 可以通过 $\nabla f(x)$ 的采样计算 $\nabla^2f(x)$ 的局部值
 
 ## Unconstraint Optimization
-最基本的基于梯度下降的优化
-- Gradient Vector: $\nabla f(x) = \left[ \frac{\partial}{\partial_x}f(x) \right]^T$
-- 每次根据 stepsize $\alpha$ 更新 $x$ 值： $x \leftarrow x - \alpha \nabla f(x)$
-- 直到变化小于 tolerance $\theta$: $|\Delta x| < \theta$
+求 Convex Function $f(x)$ 的极值，基本的梯度下降：
+- Init $x$
+- Repeat
+  - 找到 steepest descent direction $\Delta x$
+  - linear search 找到合适的步长 $t>0$
+  - update $x\leftarrow x+t\Delta x$
+  - Utiil stopping criterion is satisfied （例如 $|\Delta x| < \theta$）
+
+Steepest descent direction: 即梯度方向 $\Delta x = -\nabla_x f(x)$
+
+
 
 ### Backtracking Line Search
-是一种自适应步长 stepsize 的优化算法。基本想法是，对于凸函数，小步长可以保证得到最优解，但是希望尽量大的步长来加快收敛，所以从大到小搜索合适的步长。
+找到合适的步长$t$，等价于以下问题：
 
-<!--
-已经知道梯度方向 $\nabla f(x)$ 的情况下，定义步长的方向为 $\delta = -\frac{\nabla f(x)}{|\nabla f(x)|}$。我们希望找到一个合适的步长参数 $\alpha$，然后用 $\alpha\delta$ 作为步长。那么寻找合适的 $\nabla$ 可以看作是以下问题（当前处于 $x_c$）：
+$$\argmin_{t>0} f(x+t\Delta x)$$
 
-$$\min_{\alpha} \phi(\alpha):=f(x_c + \alpha\delta )$$
--->
+Backtracking Line Search 是一种自适应步长 stepsize 的优化算法。基本想法是，对于凸函数，小步长可以保证得到最优解，但是希望尽量大的步长来加快收敛，所以从大到小搜索合适的步长。
+
+- Init $t=1$
+- While $f(x+t\Delta x) > f(x) + \alpha t \nabla f(x)^T\Delta x$
+  - $t \leftarrow \beta t$
+
+$\alpha\in[0,0.5], \beta\in [0,1]$
+
+不足：梯度下降算法的收敛速度和函数本身的尺度相关，如果 $g(x) = 100f(x)$，梯度也会相应的扩大100倍。
 
 ### Newton Step
 [知乎：牛顿法和拟牛顿法](https://zhuanlan.zhihu.com/p/46536960)
+
+牛顿法可以得到比梯度下降更快的收敛速度。
 
 牛顿法简单说就是用泰勒级数前几项来近似函数的根。
 
@@ -48,9 +63,16 @@ $$x_{n+1} \leftarrow x_n - \frac{\nabla f(x_n)}{\nabla^2f(x_n)}$$
 
 $$x_{n+1} \leftarrow x_n - \frac{J(x_n)}{H(x_n)}$$
 
+> 另一个角度看待牛顿法 [CS287 Lecture 7](https://www.youtube.com/watch?v=gFewyKcDFXI)
+> f(x) 在某处的二阶泰勒展开为
+> $f(x+\Delta x)\approx f(x) + \nabla f(x)^T\Delta x + \frac{1}{2}\Delta x^T \nabla^2f(x)\Delta x$
+> 目标是找到一个 $\Delta x$ 使上式取最小值，所以求 $\frac{\partial(x+\Delta x)}{\partial \Delta x} = 0$，得到的结果就是 $\Delta x = -\nabla f(x)/\nabla^2f(x)$
+
 对于非凸函数，牛顿法可能跨过极值点。所以有时候会引入步长因子 $\lambda$，称为阻尼牛顿法
 
 $$x_{n+1} \leftarrow x_n - \lambda_n\frac{J(x_n)}{H(x_n)}$$
+
+这里的步长因子也可以通过 Backtracking Linear Search 得到。
 
 > 关于正定矩阵：[知乎：浅谈正定矩阵和半正定矩阵](https://zhuanlan.zhihu.com/p/44860862)，[简书：线性代数知识点整理](https://www.jianshu.com/p/21aea5108d83)
 > 
@@ -77,3 +99,9 @@ $$f(x+h) - f(x) \rightarrow \frac{1}{2}h^TH(x)h$$
 从直观上说，正定指的是特征值 > 0，也指任意线性变换得到的新的向量夹角不会超过 $\pi/2$。对于二阶导数矩阵，这意味着二阶偏导数 $>0$，函数为 凸。
 
 ![Basic Newton](../../imgs/basic_newton.png)
+
+### Quasi-Newton Methods
+近似 Hessian。
+
+## Constrained Optimization
+转化为 Unconstrained Optimization 求解

@@ -5,6 +5,8 @@
 - [Learning and Intelligent Systems Lab](https://argmin.lis.tu-berlin.de/): 柏林工业大学的实验室。
 - [Marc Toussaint 教授的课程](https://www.user.tu-berlin.de/mtoussai//teaching/index.html)
   - [Optimization Algorithm 2020-2021](https://www.user.tu-berlin.de/mtoussai/teaching/20-Optimization/)
+- [UC Berkeley: Advanced Robotics, Fall 2019](https://people.eecs.berkeley.edu/~pabbeel/cs287-fa19/)
+- [Matthew Kelly's Blog](http://www.matthewpeterkelly.com/tutorials/trajectoryOptimization/index.html): Cornell 做 Trajopt 的大佬，好人一生平安。
 - [一些其他学习资料](https://pybullet.org/Bullet/phpBB3/viewtopic.php?f=6&t=63)：Bullet 论坛里有人整理的一些和物理引擎相关的学习资料。
 
 ## 文章
@@ -77,7 +79,7 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
     - [x] KDL Kinematic Tree 构建
     - [x] Forward Kinematics 计算和检验
     - [x] 求解 IK
-      - [ ] 跨越 limit 时出现的 bug
+      - [x] 跨越 limit 时出现的 bug
     - [ ] mocap 拖动
 - [ ] mujoco 中机器人的基本控制。
   - [x] 基本的阻抗控制 impedance control。
