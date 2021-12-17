@@ -6,6 +6,7 @@
 - [Marc Toussaint 教授的课程](https://www.user.tu-berlin.de/mtoussai//teaching/index.html)
   - [Optimization Algorithm 2020-2021](https://www.user.tu-berlin.de/mtoussai/teaching/20-Optimization/)
 - [UC Berkeley: Advanced Robotics, Fall 2019](https://people.eecs.berkeley.edu/~pabbeel/cs287-fa19/)
+- [Northwestern: Modern Robotics, 2017](https://modernrobotics.northwestern.edu/nu-gm-book-resource/)
 - [Matthew Kelly's Blog](http://www.matthewpeterkelly.com/tutorials/trajectoryOptimization/index.html): Cornell 做 Trajopt 的大佬，好人一生平安。
 - [一些其他学习资料](https://pybullet.org/Bullet/phpBB3/viewtopic.php?f=6&t=63)：Bullet 论坛里有人整理的一些和物理引擎相关的学习资料。
 
@@ -90,6 +91,8 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
   - [ ] Trajectory Optimization: 参考 TrajOpt
   - [ ] Contact(Switch) Optimization：参考 LGP （CIO）
     - [ ] 调研 CIO 的 Matlab 实现
+    - [x] 运行 LGP 验证 CIO 对关节体的支持。
+      - LGP 基于 Logical 来判断物体的交互逻辑，这样的交互逻辑里面没有negative的关节体这种东西。
 - [ ] 环境交互
 
 **学习**
@@ -98,8 +101,8 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
 - Contact Invariant Optimization (Motion Synthesis)
 
 **目标**
-- [ ] 周 12.3 Sample Based Motion Plan
+- [x] 周 12.3 Sample Based Motion Plan
   - [ ] MuJoCo: Thread Safe Simulator Pool
-  - [ ] OMPL: Real Value State Space
-  - [ ] OMPL: StateValidityChecker
+  - [x] OMPL: Real Value State Space
+  - [x] OMPL: StateValidityChecker
 - [ ] 月 元旦 Contact Invariant Optimization

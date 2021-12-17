@@ -105,3 +105,19 @@ $$f(x+h) - f(x) \rightarrow \frac{1}{2}h^TH(x)h$$
 
 ## Constrained Optimization
 转化为 Unconstrained Optimization 求解
+
+$$\begin{aligned}
+    \min_x~~~&  f(x) \\ 
+    \text{s.t.}~~~&  g(x) \leq 0, h(x) = 0
+\end{aligned}$$
+
+转化为 merit function
+
+$$\begin{aligned}
+    \min_x f_\mu(x) = f(x) + \mu \sum_i |g(x)_i|^+ \mu\sum_j|h_j(x)|
+\end{aligned}$$
+
+通常会在外层循环中逐渐增大 $\mu$，$\mu\leftarrow t\mu$, $t>1$
+
+### Penalty Method with Trust Region Inner Loop
+![Trust Region Method](../imgs/../../imgs/trust_region_method.png)
