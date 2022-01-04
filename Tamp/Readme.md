@@ -93,6 +93,19 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
     - [ ] 调研 CIO 的 Matlab 实现
     - [x] 运行 LGP 验证 CIO 对关节体的支持。
       - LGP 基于 Logical 来判断物体的交互逻辑，这样的交互逻辑里面没有negative的关节体这种东西。
+- [ ] Brax
+  - [x] geom collider for mesh: Brax 只支持 Mesh 与 Primitive 碰撞，不支持 Mesh 与 Mesh 碰撞
+  - [ ] Model Based Mesh - Mesh collision：核心是可微，可以在 Brax 的计算框架内实现 Inverse
+    - [ ] 当前 Brax 碰撞的实现
+  - [ ] 基本的基于 JAX 的 Trajectory Optimization
+    - [x] ur5e 模型加载（Both Mujoco and Brax）: Brax 提供了简化模型，Mujoco 可以直接用ROS Package
+    - [x] Python Binding: scikit_build
+      - [x] pip install
+      - [x] 支持 relative RPATH
+    - [ ] 将 OMPL 的 Motion Plan 结果返回给 Brax
+      - [x] 把 Motion Plan 接口单独整理: Motion Plan 整理为了 JointGroup 接口
+      - [x] 初始化，能够在 import package 时进行 once 的初始化：直接在 `__init__.py` 里调用 extension 的函数即可。
+    - [ ] 通过 Optimization 获得速度等信息
 - [ ] 环境交互
 
 **学习**

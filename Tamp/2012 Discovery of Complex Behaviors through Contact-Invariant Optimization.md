@@ -99,4 +99,4 @@ $$L_{CI}(s) = \sum_{t}c_{i,\phi(t)}(s)\large(\normalsize\lVert e_{i,t}(s)\rVert^
 > 关于 fminunc 函数
 
 ## 使用物理引擎实现 CIO 的核心问题
-- L_Physics 的计算，$\tau$ 可以通过 inverse dynamics 直接得到。但是对于优化问题来说，需要得到的是 **$\tau$ 和当前能得到的最接近和外力之间的差值**。
+- L_Physics 的计算，$\tau$ 可以通过 inverse dynamics 直接得到。但是对于优化问题来说，需要得到的是 **$\tau$ 和当前能得到的最接近和外力之间的差值**，以及**如何改变configuration才能减小这个差值**
