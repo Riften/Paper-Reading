@@ -105,6 +105,8 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
     - [ ] 将 OMPL 的 Motion Plan 结果返回给 Brax
       - [x] 把 Motion Plan 接口单独整理: Motion Plan 整理为了 JointGroup 接口
       - [x] 初始化，能够在 import package 时进行 once 的初始化：直接在 `__init__.py` 里调用 extension 的函数即可。
+      - [ ] mujoco 的 render
+      - [ ] brax 的 render
     - [ ] 通过 Optimization 获得速度等信息
 - [ ] 环境交互
 
