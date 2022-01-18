@@ -65,7 +65,7 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
 
 - [ ] Physics Interface: 面向可微引擎设计的接口类
   - [x] JointGroup: Motion Plan 和 Control 的基本单位
-- [ ] OMPL 使用，能够做简单地 Sample Based Motion Plan
+- [x] OMPL 使用，能够做简单地 Sample Based Motion Plan
   - [x] mujoco 简单的测试场景，包含 franka 和障碍物
   - [x] 对 mujoco 进行 collision check
   - [ ] Thread Safe
@@ -82,6 +82,7 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
     - [x] 求解 IK
       - [x] 跨越 limit 时出现的 bug
     - [ ] mocap 拖动
+  - [ ] 将 JointGroup 独立于 mjData
 - [ ] mujoco 中机器人的基本控制。
   - [x] 基本的阻抗控制 impedance control。
     - [ ] 惯性矩分量计算，避免过大加速度
@@ -105,9 +106,16 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
     - [ ] 将 OMPL 的 Motion Plan 结果返回给 Brax
       - [x] 把 Motion Plan 接口单独整理: Motion Plan 整理为了 JointGroup 接口
       - [x] 初始化，能够在 import package 时进行 once 的初始化：直接在 `__init__.py` 里调用 extension 的函数即可。
-      - [ ] mujoco 的 render
+      - [x] mujoco 的 render
+        - [ ] pause
       - [ ] brax 的 render
+      - [ ] mujoco 和 brax 的 configue 之间的 index 映射。
+      - [ ] forward kinematics for brax
     - [ ] 通过 Optimization 获得速度等信息
+      - [ ] 能够完成对 Brax Robot 的姿态设置。
+        - [ ] MuJoCo State -> Brax QP
+    - [ ] 通过 Optimization 完成 contact rich 的任务，例如移动物体。
+- [ ] Thread safe log: 把 log 放到一个单独线程里
 - [ ] 环境交互
 
 **学习**
