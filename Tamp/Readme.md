@@ -107,14 +107,19 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
       - [x] 把 Motion Plan 接口单独整理: Motion Plan 整理为了 JointGroup 接口
       - [x] 初始化，能够在 import package 时进行 once 的初始化：直接在 `__init__.py` 里调用 extension 的函数即可。
       - [x] mujoco 的 render
-        - [ ] pause
-      - [ ] brax 的 render
+        - [x] pause
+      - [x] brax 的 render
       - [ ] mujoco 和 brax 的 configue 之间的 index 映射。
-      - [ ] forward kinematics for brax
+      - [ ] forward kinematics for brax： 直接使用 default_qp 计算 QP
+        - [ ] brax 与 mujoco 的 robot 设置不同 - brax 和 mujoco 之间加上一个 offset
     - [ ] 通过 Optimization 获得速度等信息
-      - [ ] 能够完成对 Brax Robot 的姿态设置。
+      - [x] 能够完成对 Brax Robot 的姿态设置。
         - [ ] MuJoCo State -> Brax QP
     - [ ] 通过 Optimization 完成 contact rich 的任务，例如移动物体。
+      - [ ] 将 contact 于 QP acceleration 之间的插值作为 physics violation loss
+        - [ ] 计算 QP 的有限差分
+        - [ ] **我们需要的是 Joint 的差分，而不是 QP 的差分。**
+        - [ ] 能否用 actuator + time 直接作为 smooth 的限制？能否修改 time step 大小。
 - [ ] Thread safe log: 把 log 放到一个单独线程里
 - [ ] 环境交互
 
