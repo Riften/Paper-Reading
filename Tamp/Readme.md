@@ -91,7 +91,7 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
 - [ ] Optimization 问题构建
   - [ ] Trajectory Optimization: 参考 TrajOpt
   - [ ] Contact(Switch) Optimization：参考 LGP （CIO）
-    - [ ] 调研 CIO 的 Matlab 实现
+    - [x] 调研 CIO 的 Matlab 实现
     - [x] 运行 LGP 验证 CIO 对关节体的支持。
       - LGP 基于 Logical 来判断物体的交互逻辑，这样的交互逻辑里面没有negative的关节体这种东西。
 - [ ] Brax
@@ -116,7 +116,7 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
       - [x] 能够完成对 Brax Robot 的姿态设置。
         - [ ] MuJoCo State -> Brax QP
     - [ ] 通过 Optimization 完成 contact rich 的任务，例如移动物体。
-      - [ ] 将 contact 于 QP acceleration 之间的插值作为 physics violation loss
+      - [ ] 将 contact 于 QP acceleration 之间的差值作为 physics violation loss
         - [ ] 计算 QP 的有限差分
         - [ ] **我们需要的是 Joint 的差分，而不是 QP 的差分。**
         - [ ] 能否用 actuator + time 直接作为 smooth 的限制？能否修改 time step 大小。

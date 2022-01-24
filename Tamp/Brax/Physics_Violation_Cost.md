@@ -30,4 +30,18 @@ $$\begin{aligned}
 - Inverse Dynamics 求出可以施加的力 $u$
 - $cost = \lVert u - \tau\rVert^2$
 
+## 物理引擎存在的问题
+- 能否求解 Inverse Dynamics，这决定了能否求出当前 trajectory 能够获取到的 force 和 target 的差距
+- 能否最小化 cost，支持 inverse dynamic 的 物理引擎 可以求出 $cost = f(q)$，但是 $f$ 本身可能十分复杂，包含了类似 CIO 的子优化过程且复杂得多，不一定可以求出 $q* = \argmin_q f(q)$
+
+对于 Brax 来说，其最大的优点在于 $\nabla_{QP}f(QP)$ 可以求，因此只要可以表示出 cost，可以通过梯度下降来最小化 cost。
+
 ## Brax
+Brax 中计算的基本单位是 
+- Q：Configuration，包含每个 body 的 pos 
+- P: Q 的时间微分，即速度（没有进一步 P 的微分）
+
+Brax 中所有计算使用 JAX 实现，QP 作为输入，计算出 contact 等信息。
+
+总体上，Brax 的 Physics Violation Cost 可以表示为
+$$cost = f(QP, A)$$
