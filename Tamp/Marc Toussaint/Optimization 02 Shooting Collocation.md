@@ -32,3 +32,7 @@ $u$ 必须是经过离散化的，比如 linear 或者 spline 连接的点。
 
 ## Collocation
 同时将 $u(t),q(t),T$ 作为优化变量。不通过 simulation 来保证 dynamics，而是直接将 dynamics 作为 constraints。需要通过优化 dynamics constraint 来保证 control trajectory 和 system trajectory 是一致的。
+
+Collocation 将 dynamics 直接作为 constraints，所以在优化过程中可以不满足 dynamics 限制。而 Shooting 直接依赖于 simulation 过程来更新 control，所以无法突破 dynamics 限制。
+
+定义 physics violation loss 也是 collocation 算法的一个核心问题。

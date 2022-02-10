@@ -17,3 +17,8 @@ default_qp 接口，位置 `brax/physics/system.py/System::default_qp`
         ```
       上面的代码让每个 link 的 depth 是其前继节点的数量。
     - 对 joint 进行排序，按照 joint 的 parent link 的 depth 升序。对于第一个 joint 来说，其 parent link 并不在 depth dict 的 key 中，所以如果某个 joint 的 parent link 没有 depth 则 depth 取 0
+
+## step
+step 接口是对整个系统进行模拟的核心接口，位置 `brax/physics/system.py/System::step`
+
+## joint.apply

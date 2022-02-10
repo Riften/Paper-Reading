@@ -120,8 +120,8 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
         - [ ] 计算 QP 的有限差分
           - [x] Error: TracerArrayConversionError，简单说就是 BRAX 使用了一些 Numpy 函数，导致 JAX 无法追踪到梯度
           - [ ] 完全用 JAX 实现 Forward Kinematic
-        - [ ] **我们需要的是 Joint 的差分，而不是 QP 的差分。**
-        - [ ] 能否用 actuator + time 直接作为 smooth 的限制？能否修改 time step 大小。
+        - [ ] 能否用 actuator + time 直接作为 smooth 的限制？
+        - [x] 能否修改 time step 大小 - 可以直接修改 config.dt 或者 config.substeps
 - [ ] Thread safe log: 把 log 放到一个单独线程里
 - [ ] 环境交互
 
