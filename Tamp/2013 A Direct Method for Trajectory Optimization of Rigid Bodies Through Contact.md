@@ -18,3 +18,19 @@ autonomous hybrid dynamical system 模型对于持续接触的 contact 关系并
 而本文的基本逻辑就是 **将求解 contact 的互补问题直接整合到 collocation method 的优化问题中**。最终问题形式是一个 Mathematical Program with Complementarity Constraints (MPCC)，并用 Sequential Quadratic Programming (SQP) 求解。
 
 ## Contact Dynamics as Complementarity Problem
+刚体系统的无摩擦 forward dynamic 问题可以表述成以下 LCP 问题
+
+$$\begin{aligned}
+    \text{find} & & &\ddot{q}, \lambda \\
+    \text{subject to} & & &H(q)\ddot{q} + C(q, \dot{q}) + G(q) = B(q)u + J(q)^T\lambda\\
+    & & & \phi(q)\geq 0\\
+    & & & \lambda \geq 0\\
+    & & & \phi(q)^T\lambda = 0
+\end{aligned}$$
+
+最上面的式子是常见的动力学方程，下面三个式子构成了一个 complementarity constraint。
+
+$\phi(q)$ 是是否发生 contact 的限制条件，例如碰撞物体之间的距离，$\lambda$ 是碰撞带来的力。$\phi(q)$ 的定义往往非常困难。直接求解 forward dynamics 通常会得到瞬时极大的碰撞力。
+
+## Approach
+既然 contact $\lambda$ 本身可以表述成 LCP，那干脆将 $\lambda$ 也作为变量一部分，将 LCP 直接作为 constraint 一部分，构建一整个优化问题。
