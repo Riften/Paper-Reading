@@ -14,6 +14,9 @@
 - [Integrated Task and Motion Planning](./2021%20Integrated%20Task%20and%20Motion%20Planning.md): TAMP 的 Survey
 - [Regression Planning Network](./2019%20Regression%20Planning%20Network.md): RPN ，一个用视觉直接做为 State 表示的 Task Plan 方法
 - [HTN planning: Overview, comparison, and beyond](./2015%20HTN%20Planning%20-%20Overview,%20comparision,%20and%20beyond.md): 基于 HTN 的 Task Plan 算法的 Survey
+- [Discovery of Complex Behaviors through Contact-Invariant Optimization](./2012%20Discovery%20of%20Complex%20Behaviors%20through%20Contact-Invariant%20Optimization.md): CIO 文章，用简化的 dynamic model 做包含 contact 的 optimization
+- [A Direct Method for Trajectory Optimization of Rigid Bodies Through Contact](./2013%20A%20Direct%20Method%20for%20Trajectory%20Optimization%20of%20Rigid%20Bodies%20Through%20Contact.md): 将求解 contact 的 LCP 问题直接和 Traject Optimization 一起求解。
+- [Logic-Geometric Programming: An Optimization-Based Approach to Combined Task and Motion Planning](./2015%20Logic-Geometric%20Programming%20An%20Optimization-Based%20Approach%20to%20Combined%20Task%20and%20Motion%20Planning.md): LGP，不考虑 contact ，不考虑 input 的一套 optimization 框架。
 
 其他这个目录里的文章感兴趣的话也可以瞅瞅。
 
@@ -25,13 +28,13 @@
 - [ROS2 Tutorial](https://docs.ros.org/en/foxy/Tutorials.html): ROS2 的教程
 - [Moveit2 Tutorial](http://moveit2_tutorials.picknik.ai/): Motion Plan 库，初步可能直接使用 Moveit 的 Planning Scene 作为维护场景信息的数据结构
 - [Pybind11 Tutorial](https://pybind11.readthedocs.io/en/stable/installing.html)：Bind 到 Python 使用的工具
-- [Gecode](https://www.gecode.org/): 当前适用的 Constraint Solver
+<!--- [Gecode](https://www.gecode.org/): 当前适用的 Constraint Solver-->
 - [Bullet3](https://github.com/bulletphysics/bullet3): 通用的模拟器，以后可能考虑基于他的 dynamic world 重新实现 planning scene
 - [scikit-build tutorial](https://scikit-build.readthedocs.io/en/latest/): 用不用待定，一个可以用 CMake 调用 setuptool 的解决方案，方便直接发行 Python Package。
 
 ## 我们的仓库
-- [rftask](https://github.com/mvig-robotflow/rftask): 当前代码，后续会重命名为 rfplanner
-- [rfpddl](https://github.com/mvig-robotflow/rfpddl): Programmable PDDL 实现，可以作为独立 package 使用
+<!--- [rftask](https://github.com/mvig-robotflow/rftask): 当前代码，后续会重命名为 rfplanner
+- [rfpddl](https://github.com/mvig-robotflow/rfpddl): Programmable PDDL 实现，可以作为独立 package 使用-->
 - [Paper-Reading](https://github.com/Riften/Paper-Reading): 我的一部分论文阅读笔记，这个文档也在这个仓库里。
 
 之后会把 pddl 独立成单独仓库。
