@@ -32,5 +32,7 @@ $$\begin{aligned}
 
 $\phi(q)$ 是是否发生 contact 的限制条件，例如碰撞物体之间的距离，$\lambda$ 是碰撞带来的力。$\phi(q)$ 的定义往往非常困难。直接求解 forward dynamics 通常会得到瞬时极大的碰撞力。
 
+LCP 的形式其实和 CIO 非常近似，CIO 相当于用简化的 “eef 之间的距离” 代替了这里的 $\phi$。
+
 ## Approach
 既然 contact $\lambda$ 本身可以表述成 LCP，那干脆将 $\lambda$ 也作为变量一部分，将 LCP 直接作为 constraint 一部分，构建一整个优化问题。

@@ -8,6 +8,7 @@
 - [UC Berkeley: Advanced Robotics, Fall 2019](https://people.eecs.berkeley.edu/~pabbeel/cs287-fa19/)
 - [Northwestern: Modern Robotics, 2017](https://modernrobotics.northwestern.edu/nu-gm-book-resource/)
 - [Matthew Kelly's Blog](http://www.matthewpeterkelly.com/tutorials/trajectoryOptimization/index.html): Cornell 做 Trajopt 的大佬，好人一生平安。
+- [DAIR Lab](https://dair.seas.upenn.edu/): Posa 的 LAB，专门做 contact involved optimization
 - [一些其他学习资料](https://pybullet.org/Bullet/phpBB3/viewtopic.php?f=6&t=63)：Bullet 论坛里有人整理的一些和物理引擎相关的学习资料。
 
 ## 文章
@@ -125,6 +126,7 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
           - [ ] 完全用 JAX 实现 Forward Kinematic
         - [ ] 能否用 actuator + time 直接作为 smooth 的限制？
         - [x] 能否修改 time step 大小 - 可以直接修改 config.dt 或者 config.substeps
+        - [ ] Brax 是否也用 LCP 求解 contact？能否直接将 LCP 变量作为优化变量？
 - [ ] Thread safe log: 把 log 放到一个单独线程里
 - [ ] 环境交互
 
