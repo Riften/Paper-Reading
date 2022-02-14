@@ -127,6 +127,7 @@ PDDLStream | Fast Download | 本质上是一个 Task Plan 库，用 Stream 作�
         - [ ] 能否用 actuator + time 直接作为 smooth 的限制？
         - [x] 能否修改 time step 大小 - 可以直接修改 config.dt 或者 config.substeps
         - [ ] Brax 是否也用 LCP 求解 contact？能否直接将 LCP 变量作为优化变量？
+        - [ ] 能否直接在 maximal coordinates 中进行优化，而不是在 joint space - 看上去肯定可以
 - [ ] Thread safe log: 把 log 放到一个单独线程里
 - [ ] 环境交互
 
