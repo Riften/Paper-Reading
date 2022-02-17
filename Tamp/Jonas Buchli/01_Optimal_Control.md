@@ -56,3 +56,8 @@ u(n,x) &= \mu(n,x)
 4. 求解 Bellman Equation $u^*(m, x_m) = \argmin_{u_m}[L_m(x_m, u_m) + \alpha \tilde{V}(x_{m+1}, u_{m+1})]$，得到在 $m$ 处最小化 Value Function 的 control policy
 5. 从 $m=N-1$ 到 $m=0$ 执行 3，4。可以得到一个优化后的 control input，然后更新 $\mu^{k+1} = \mu^k + \alpha_k \delta \mu^k$
 6. 重复 2-5 直到满足停止条件。
+
+SLQ 算法和 SQP 很类似，只是由于 constraint 是非线性的，所以不能用简单地 QP Solver 更新参数。
+
+## Iterative Linear Quadratic Controller (ILQC)
+ILQC 是 SLQ 的一种。
