@@ -60,4 +60,12 @@ u(n,x) &= \mu(n,x)
 SLQ 算法和 SQP 很类似，只是由于 constraint 是非线性的，所以不能用简单地 QP Solver 更新参数。
 
 ## Iterative Linear Quadratic Controller (ILQC)
-ILQC 是 SLQ 的一种。
+ILQC 是 SLQ 的一种，通过把原来的非线性问题转化为迭代解决的一系列 linear dynamics and quadratic cost 问题。
+
+- 初始化：初始化一个合理的 policy $\mu$
+- Roll-Out: 通过 forward-ingetration，按照 nonlinear system dynamics 执行 $\mu$，得到 trajectory $\bar{u}_n^{(i)},\bar{x}_n^{(i)}$ for $n=1,...,N$
+  - $$x_{n+1} = f_n(x_n, u_n)$$
+- Linear-Quadratic Approximation: 对每一个 $(\bar{u}_n^{(i)},\bar{x}_n^{(i)})$对，构建一个局部的 linear-quadratic 近似
+  - 目的是在 trajectory 的局部，将 dynamic 近似成线性，将 cost 近似成 quadratic
+
+## Linear Quadratic Regulator (LQR)
