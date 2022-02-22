@@ -3,6 +3,8 @@
 
 证明了 Newmark Algorithm 本身也是满足变分原理的。
 
+Integrator 总体的
+
 ## Variational Integrators
 [Slide: Discrete Variational Mechanics - Benjamin Stephens](https://www.cs.cmu.edu/~bstephe1/present/variational.ppt)
 
@@ -128,7 +130,7 @@ $$\begin{aligned}
 > 为什么 $q_{n+1} = q_n + \Delta t\dot{q}_n + \frac{1}{2} \Delta t^2 \ddot{q}_\beta$ ?
 > $\ddot{q}_\beta$ 是 $\ddot{q}$ 在 $[t, t + \Delta t]$ 上的中值，等于 $\dot{q}_n$ 和 $\dot{q}_{n+1}$ 关于时间的差分，即$\ddot{q}_\beta = (\dot{q}_n$ + $\dot{q}_{n+1})/\Delta t$，带入原式就是 $q_{n+1} = q_n  + \frac{1}{2} \Delta t(\dot{q}_{n+1} + \dot{q}_n)$。这个等式显然是不一定成立的，但是我们的目的是找到一个足够接近的线性近似，如果 $q$ 是线性的，这个等式就是成立的。
 
-上面两个式子给出了速度和位移的 integration，但是其中都用到了加速度。而加速度可以从动力方程得到
+上面两个式子是 **Newmark Algorithm 的核心**，给出了速度和位移的 integration，但是其中都用到了加速度。而加速度可以从动力方程得到
 
 $$\ddot{q}_{n+1}  =  M^{-1}\left[ f^{ext}(t_{n+1}) - C\dot{q}_{n+1} - f^{int}(q_{n+1}) \right]$$
 
@@ -150,3 +152,24 @@ $$q'_{n+1} = \frac{\gamma(q_{n+1}-q_n)}{\beta\Delta t} + q'_n(1-\frac{\gamma}{\b
 对于加速度
 
 $$q''_{n+1} = \frac{q_{n+1} - q_n}{\beta \Delta t^2} - \frac{q'_n}{\beta\Delta t} - (\frac{1}{2\beta} - 1)q''_n$$
+
+### Effective Incremental Potential
+考虑简化的 dynamic equation
+
+$$M\ddot{q} + f^{int}(q,\dot{q}) = f^{ext}(t)$$
+
+这里的 internal force 被假设影响两部分势能
+- 保守力势能 conservative potential $V(q)$，类似重力势能，能量只于力和力的位移有关，和路径无关
+- 耗散势能 dissipative potential $\psi (q,\dot{q})$，例如弹性形变或者弹性碰撞耗散的内能。
+
+内力和这两部分的能量关系是
+
+$$f^{int}(q, \dot{q}) = \frac{\partial V(q)}{\partial q} + \frac{\partial \psi(q, \dot{q})}{\partial \dot{q}}$$
+
+Newmark Scheme 给出了基于中值定理的 $q$，$\dot{q}$，$\ddot{q}$ 的增量关系($h$ 为时间微元 $\Delta t$)：
+
+$$\begin{aligned}
+    q_{k+1} &= q_k + h\dot{q}_k + \frac{h^2}{2}\left[(1-2\beta)\ddot{q}_k + 2\beta \ddot{q}_{k+1}\right]\\
+    M\ddot{q}_{k+1} + f^{int}_{k+1} &= f^{ext}_{k+1}\\
+    \ddot{q}_{k+1} &= \ddot{q}_k + h [(1-\gamma)\ddot{q}_k + \gamma q_{k+1}]
+\end{aligned}$$
