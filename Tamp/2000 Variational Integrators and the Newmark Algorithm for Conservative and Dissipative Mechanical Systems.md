@@ -82,3 +82,71 @@ $$q_{k+1}^{i+1} = q_{k+1}^i - \frac{f(q_{k+1}^i)}{\nabla f(q_{k+1}^i)}$$
 - 用牛顿法求欧拉-拉格朗日方程的解
 
 ## Incremental Potential
+从 Newmark Algorithm 推导的一个用 optimization 进行 integration 的策略。
+
+### Newmark Algorithm
+- [ScienceDirect: Newmark Method](https://www.sciencedirect.com/topics/engineering/newmark-method)
+- [Wikipedia: Newmark-$\beta$ Method](https://en.wikipedia.org/wiki/Newmark-beta_method)
+
+整个 dynamic system 由以下动力方程决定
+
+$$M\frac{d^2q}{dt^2} + C\frac{dq}{dt} + f^{int}(q) = f^{ext}(t)$$
+- $M$ mass matrix
+- $C$ damping matrix 阻尼矩阵
+- $f^{int}$ internal force
+- $f^{ext}$ external force
+
+对于运动系统来说 $q(t)$ 一定是一阶可微的（速度连续），所以满足 Mean Value Throrem （两点之间存在一点的导数等于两点连线的斜率），即对任意 $t, \Delta t$，总存在 $\beta\in(0,1)$，使得
+
+$$q(t+\Delta t) - q(t) = q'(t+\beta\Delta t)\Delta t$$
+
+记 $q_{n+1} = q(t+\Delta t)$, $q_n = q(t)$，$q_\gamma = (1-\gamma )q_n + \gamma q_{n+1}$，$0\leq\gamma\leq 1$，即 $q_\gamma$ 是 $[t,t+\Delta t]$ 之间的一点处的值。
+
+<!--则泰勒展开可以表述为
+
+$$\begin{aligned}
+    q_{n+1} &= q_n + q'_n\Delta t + \ q''_n\frac{(\Delta t)^2}{2!} + q'''_n\frac{(\Delta t)^3}{3!} + ...\\
+    q'_{n+1} &= q'_n + q''_n\Delta t + \ q'''_n\frac{(\Delta t)^2}{2!} + ...
+\end{aligned}$$
+-->
+
+则根据微分中值定理把**差分用一阶导数的中值代替**，有（其实就是 $v(t+\Delta t) = v(t) + a\Delta t$）
+
+$$\begin{aligned}
+    \dot{q}_{n+1} &= \dot{q}_n + \Delta t \ddot{q}_\gamma\\
+    &=\dot{q}_n + \Delta t \left[(1-\gamma) \ddot{q}_n + \gamma\ddot{q}_{n+1}\right] \\
+    &=\dot{q}_n +  (1-\gamma)\Delta t \ddot{q}_n + \gamma\Delta t\ddot{q}_{n+1}
+\end{aligned}$$
+
+然后对于位移，也用同样地 **导数中值代替差分** 的想法，但是为了和加速度建立联系，用的是二阶导数的中值，记 $q_\beta = (1-2\beta)q_n + 2\beta q_{n+1}$，$0\leq 2\beta\leq 1$，类似速度，有
+
+$$\begin{aligned}
+    q_{n+1} &= q_n + \Delta t\dot{q}_n + \frac{1}{2} \Delta t^2 \ddot{q}_\beta \\
+    &=q_n + \Delta t\dot{q}_n + \frac{1}{2} \Delta t^2 [(1-2\beta)\ddot{q}_n + 2\beta \ddot{q}_{n+1}]
+\end{aligned}$$
+
+> 为什么 $q_{n+1} = q_n + \Delta t\dot{q}_n + \frac{1}{2} \Delta t^2 \ddot{q}_\beta$ ?
+> $\ddot{q}_\beta$ 是 $\ddot{q}$ 在 $[t, t + \Delta t]$ 上的中值，等于 $\dot{q}_n$ 和 $\dot{q}_{n+1}$ 关于时间的差分，即$\ddot{q}_\beta = (\dot{q}_n$ + $\dot{q}_{n+1})/\Delta t$，带入原式就是 $q_{n+1} = q_n  + \frac{1}{2} \Delta t(\dot{q}_{n+1} + \dot{q}_n)$。这个等式显然是不一定成立的，但是我们的目的是找到一个足够接近的线性近似，如果 $q$ 是线性的，这个等式就是成立的。
+
+上面两个式子给出了速度和位移的 integration，但是其中都用到了加速度。而加速度可以从动力方程得到
+
+$$\ddot{q}_{n+1}  =  M^{-1}\left[ f^{ext}(t_{n+1}) - C\dot{q}_{n+1} - f^{int}(q_{n+1}) \right]$$
+
+然后上面三个式子可以整理成 $X_{n+1}, \dot{X}_{n+1}, \ddot{X}_{n+1} = F(X_n, \dot{X}_n, t)$ 的形式，也就是我们想要的 integrator 形式：
+
+记 $f^{int}(q) = Kq$，即内力也是关于 configuration 线性的。
+
+对于位移，有
+$$\begin{aligned}
+    q_{n+1} &= A^{-1}B_n\\
+    A &= \frac{M}{\beta(\Delta t)^2} + \frac{\gamma C}{\beta \Delta t} + K \\
+    B_n &= f^{ext}(t_{n+1}) + M\left[\frac{q_n}{\beta(\Delta t)^2} + \frac{q'_n}{\beta\Delta t} + (\frac{1}{2\beta}-1)q''_n\right] + C\left[\frac{\gamma q_n}{\beta\Delta t} - q'_n(1-\frac{\gamma}{\beta}) - \Delta t q''_n (1-\frac{\gamma}{2\beta})\right]
+\end{aligned}$$
+
+对于速度，有
+
+$$q'_{n+1} = \frac{\gamma(q_{n+1}-q_n)}{\beta\Delta t} + q'_n(1-\frac{\gamma}{\beta}) + \Delta t q''_n(1-\frac{\gamma}{2\beta})$$
+
+对于加速度
+
+$$q''_{n+1} = \frac{q_{n+1} - q_n}{\beta \Delta t^2} - \frac{q'_n}{\beta\Delta t} - (\frac{1}{2\beta} - 1)q''_n$$
