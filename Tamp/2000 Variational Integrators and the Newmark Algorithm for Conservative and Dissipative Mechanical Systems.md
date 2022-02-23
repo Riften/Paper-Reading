@@ -154,7 +154,16 @@ $$q'_{n+1} = \frac{\gamma(q_{n+1}-q_n)}{\beta\Delta t} + q'_n(1-\frac{\gamma}{\b
 $$q''_{n+1} = \frac{q_{n+1} - q_n}{\beta \Delta t^2} - \frac{q'_n}{\beta\Delta t} - (\frac{1}{2\beta} - 1)q''_n$$
 
 ### Effective Incremental Potential
-考虑简化的 dynamic equation
+Newmark Method 能够求解的基本假设是线性假设 $C\dot{q} + Kq$，但是实际上的阻力和内力关系往往没那么简单。
+
+本文的一大部分都在证明 Newton-Euler Equation 和 Lagrange 变分的一致性，这里相当于希望把 Newton-Euler Equation 转化成一个变分条件。Newton-Euler Equation 实际上是 *力为0*,而和力本质上是能量关于 $q,\dot{q}$ 的导数，即力关于 $q,\dot{q}$ 的积分就是能量变化。
+
+所以这里的基本思路是
+- 通过 Newmark Method 中使用中值定理得到的近似，将 Newton-Euler Equation 中除了 $q$ 以外的变量去掉
+- Newton-Euler Equation 关于 $q$ 的积分等价于 $\int L(q,\dot{q}, t)dt$，该积分关于 $t$ 的导数就是 $f(q)$ ,某状态下的总能量。
+- 用最优化的方法求 $\argmin_q f(q)$
+
+考虑更通用的的 dynamic equation 形式
 
 $$M\ddot{q} + f^{int}(q,\dot{q}) = f^{ext}(t)$$
 
@@ -173,3 +182,53 @@ $$\begin{aligned}
     M\ddot{q}_{k+1} + f^{int}_{k+1} &= f^{ext}_{k+1}\\
     \ddot{q}_{k+1} &= \ddot{q}_k + h [(1-\gamma)\ddot{q}_k + \gamma q_{k+1}]
 \end{aligned}$$
+
+在位移增量关系中，可以看作有两部分，一部分直接用上一阶段的 $\{q,\dot{q}\}_k$得到，另一部分则需要未知的$\ddot{q_{k+1}}$。
+
+记
+$$q^{pre}_{k+1} = q_k + h\dot{q}_{k} + \frac{h^2}{2}[(1-2\beta)\ddot{q}_{k}]$$
+
+这样就把 $q_{k+1}$ 分成了两部分，由上一阶段可以直接推得的 $q^{pre}_{k+1}$ 和需要 $\ddot{q}_{k+1}$ 才能算出来的部分
+
+$$q_{k+1} = q^{pre}_{k+1}+\beta h^2 \ddot{q}_{k+1}$$
+
+原本的 Newmark Method 中，先通过 Newton-Euler Equation 算出来 $q_{k+1}$，然后再算 $\dot{q}_{k+1}$ 和 $\ddot{q}_{k+1}$。能这样直接求解的原因是 Newmark Method 假设阻力和内力都是线性的，所以可以直接求解线性方程。
+
+而在这里 $f^{int}(q,\dot{q})$ 包含了 Newmark Method 中的 $C\dot{q} + Kq$，而且不再保证线性。这让该式能够表示更复杂的 dynamic 关系，但是无法直接通过求解线性方程求解。
+
+为了求解这个更通用的 dynamic equation 得到 $q_{k+1}$，首先需要找到 $f^{int}_{k+1}$ 和 $q_{k+1}$ 之间的关系，来替代原本的线性假设 $C\dot{q} + Kq$ 的作用。
+
+而本文采用的关系就是 **effective incremental potential**：
+
+首先回顾这里的内力的定义是 $f^{int}(q, \dot{q}) = \frac{\partial V(q)}{\partial q} + \frac{\partial \psi(q, \dot{q})}{\partial \dot{q}}$，即保守势和耗散势关于 configuration 的微分，保守势本身就只于 $q$ 有关，所以剩下需要把找到一个耗散势关于 $q$ 的线性近似，这里采用的近似如下
+
+$$\begin{aligned}
+    V_k(q_{k+1}) &= V(q_{k+1}) + h\psi\left(q_{k+\sigma}, \frac{q_{k+1} - q_k}{h}\right),\\
+    q_{k+\sigma} &= (1-\sigma)q_k + \sigma q_{k+1},~~~~\sigma\in[0,1]
+\end{aligned}$$
+
+> 为啥这么取近似？？
+
+这样就有了 $f^{int}$ 和 $q$ 之间的直接关系
+
+$$f^{int}_{k+1} = \frac{\partial V_k(q_{k+1})}{\partial q_{k+1}}$$
+
+当 $h\rightarrow 0$ 的时候上式收敛到 $\frac{\partial V(q)}{\partial q} + \frac{\partial \psi(q, \dot{q})}{\partial \dot{q}}$。
+
+根据 $q_{k+1} = q_k + h\dot{q}_k + \frac{h^2}{2}\left[(1-2\beta)\ddot{q}_k + 2\beta \ddot{q}_{k+1}\right]$ 有 $\ddot{q}_{k+1} = \frac{q_{k+1}-q^{pre}_{k+1}}{\beta h^2}$，加上得到的内力与 $q_{k+1}$ 之间的直接关系，成功的去掉了 Newton-Euler Equation 中除了 $q$ 以外的变量：
+
+$$M\frac{q_{k+1}-q^{pre}_{k+1}}{\beta h^2} + f^{int}_{k+1} = f^{ext}_{k+1}$$
+
+然后我们需要上式关于 $q$ 的积分再关于 $t$ 求导，得到等价的 $L$。拆开来看三个部分分别对应了动能、内能、外力做功。那么对应的 $L$ 就是总能量
+
+$$\frac{1}{2\beta h^2}(q_{k+1}-q^{pre}_{k+1})^TM(q_{k+1}-q^{pre}_{k+1}) + V_k(q_{k+1}) - f_{k+1}^{ext}q_{k+1}$$
+
+那么该 Newton-Euler Equation 对应的 Euler-Lagrange Equation 可以是
+
+$$f(q_{k+1}) = \frac{1}{2 h^2}(q_{k+1}-q^{pre}_{k+1})^TM(q_{k+1}-q^{pre}_{k+1}) +\beta V_k(q_{k+1}) -\beta f_{k+1}^{ext}q_{k+1}$$
+
+对应的 integrator 可以通过求解
+
+$$\argmin_{q_{k+1}} f(q_{k+1})$$
+
+得到。
