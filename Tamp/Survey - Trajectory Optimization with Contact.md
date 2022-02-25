@@ -21,6 +21,39 @@
 
 contact 的参与者可以是预定义的。
 
+## IPC 的 Trajectory Optimization 形式
+IPC 本身提供的是一个 Integrator 策略，即在已知初始状态 $\{x^0, v^0 \}$ 的情况下，不断求解 IP 来执行 Simulation
+
+$$x^{t+1} = \argmin_x E(x, x^t, v^t) + \kappa\sum_{k\in\mathcal{C}}b(d_k(x))$$
+
+该形式并不是 Trajectory Optimization 形式，但是如果我们将 $x^{t+1}$ 看作是变量，那么原本的 Barrier-Augmented Incremental Potential 就可以看作是一个 configuration pair 的函数
+
+$$\begin{aligned}
+&B_{t}(x^{t+1}, x^t, v^t) = E(x^{t+1}, x^t, v^t) + \kappa\sum_{k\in\mathcal{C}}b(d_k(x^{t+1}))\\
+&=\frac{1}{2}(x^{t+1}-\hat{x})^TM(x^{t+1}-\hat{x}) - h^2x^{t+1T}f_d + h^2\Psi(x^{t+1}) + \kappa\sum_{k\in\mathcal{C}}b(d_k(x^{t+1}))
+\end{aligned}$$
+
+其中
+
+$$\hat{x} = x^t + hv^t + h^2M^{-1}f_e$$
+
+Trajectory Optimization 形式可以表示为
+
+$$\begin{aligned}
+  \text{minimization} & & &\sum_{t=0}^{t=n-1} B_{t}(x^{t+1}, x^t, v^t)\\
+  \text{subject to} & & &x^0 = x_0, x^n = x_n
+\end{aligned}$$
+
+**上述方法无法表述驱动力。** 可能的方法：
+- 对于 end effector，使其对应的 $f_e$ 也作为变量。
+- 使 end effector 的 动能项不参与计算。
+
+
+## Obstacle Avoidance IPC
+直接加上 Obstacle Collision 的惩罚项相当于给每个障碍物添加了一个天然存在的排斥力的势场（等同于直接给障碍物加上了一个 $\hat{d}$ 很大的 $b(d(x))$）：
+- 对于 end effector 来说是可行的，因为 end effector 本身有外加输入的驱动力。
+- 对于操作的物体来说会出现问题，物体会受到障碍物的斥力，这不是我们的目标。
+
 ## Reference
 - [Posa 01: A Direct Method for Trajectory Optimization of Rigid Bodies Through Contact][Posa 01]
 - [Mordatch 01: Discovery of Complex Behaviors through Contact-Invariant Optimization][Mordatch 01]
