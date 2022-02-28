@@ -65,7 +65,25 @@ $$B_{t}(x) = E(x, x^t, v^t) + \kappa\sum_{k\in\mathcal{C}}b(d_k(x))$$
 
 上式中，如果将整体看作一个 Incremental Potential，Barrier Function 在这里也充当了一个势能项，该项在两个 primitive 接触的时候为无穷大。
 
+## Implicit Euler
+最小化 $B_t(x)$ 即求解 $\nabla_x B_t(x, \hat{d})=0$，即
+
+$$M\frac{x-\hat{x}}{h^2} = -\nabla\Psi(x) + \sum_{k\in\mathcal{C}} \lambda_k \nabla d_k(x)$$
+
+上式形式即为一个 Newton-Euler 方程。这里的 $\lambda$ 就是等效的 contact force
+
+$$\lambda_k = \frac{\kappa}{h^2}\frac{\partial b}{\partial d_k}$$
+
+## Intersection-aware Line & CCD
+- [Note: Optimization (Newton Method)](./Marc%20Toussaint/Optimization%2001.md)
+
+基本的想法是：先用 Continuous Collision Detection 找到一个梯度方向上的最大步长，然后在做 back-tracking line search。
+
 ## neo-Hookean material
+### FEM & MPM
+- [Wikipedia: Finite Element Method](https://en.wikipedia.org/wiki/Finite_element_method)
+
+Finite Element Method (FEM) 有限单元法。
 
 ## Intersection-aware line search
 

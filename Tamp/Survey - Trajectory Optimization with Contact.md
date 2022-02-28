@@ -48,6 +48,9 @@ $$\begin{aligned}
 - 对于 end effector，使其对应的 $f_e$ 也作为变量。
 - 使 end effector 的 动能项不参与计算。
 
+另外由于 IPC 首先根据 primitive 之间的距离进行了剪枝，所以 primitive 距离过远的时候梯度会消失。可能的解决方法：
+- 对于确定需要发生的 contact，保证 initial trajectory 即发生 contact。
+
 
 ## Obstacle Avoidance IPC
 直接加上 Obstacle Collision 的惩罚项相当于给每个障碍物添加了一个天然存在的排斥力的势场（等同于直接给障碍物加上了一个 $\hat{d}$ 很大的 $b(d(x))$）：
