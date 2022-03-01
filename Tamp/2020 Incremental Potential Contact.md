@@ -31,6 +31,8 @@ $$q_{k+1} = \argmin_{q_{k+1}}\frac{1}{2 h^2}(q_{k+1}-q^{pre}_{k+1})^TM(q_{k+1}-q
 - $q^{pre}_{k+1} = q_k + h\dot{q}_{k} + \frac{h^2}{2}[(1-2\beta)\ddot{q}_{k}]$，类似的定义 $\hat{x} = x^t + hv^t + h^2M^{-1}f_e$
 - $V_k$ 为势能+耗散能，等价于这里的 $\Psi(x) - x^Tf_d$
 
+> 为什么这里直接用了 $f_e$ 而不是用求出来的上一步的 $\ddot{q}_k$？实际实现里面这个 $f_e$ 是怎么求的？理论上这应当是 环境中的保守力 + barrier 求导得到的 contact force + 摩擦力。
+
 $$\begin{aligned}
     &E(x, x^t, v^t) = \frac{1}{2}(x-\hat{x})^TM(x-\hat{x}) - h^2x^Tf_d + h^2\Psi(x)\\
     &x^{t+1} = \argmin_x E(x,x^t, v^t), ~~~~x^\tau\in \mathcal{A}

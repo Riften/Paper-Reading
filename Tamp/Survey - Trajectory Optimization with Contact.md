@@ -45,12 +45,26 @@ $$\begin{aligned}
 \end{aligned}$$
 
 **上述方法无法表述驱动力。** 可能的方法：
-- 对于 end effector，使其对应的 $f_e$ 也作为变量。
+- 对于 end effector，使其对应的 $f_t$ 也作为变量。
 - 使 end effector 的 动能项不参与计算。
 
 另外由于 IPC 首先根据 primitive 之间的距离进行了剪枝，所以 primitive 距离过远的时候梯度会消失。可能的解决方法：
 - 对于确定需要发生的 contact，保证 initial trajectory 即发生 contact。
 
+### 驱动力引入
+定义 $f^{ext}_t$ 为 time step $t$ 施加在 end-effector 上的驱动力，则原本的 Incremental Potential 变成
+
+$$\begin{aligned}
+  &\frac{1}{2}(x^{t+1}-\hat{x})^TM(x^{t+1}-\hat{x}) \\
+  &- h^2x^{t+1T}f_d \\
+  &+ h^2\Psi(x^{t+1}) \\
+  &+ \kappa\sum_{k\in\mathcal{C}}b(d_k(x^{t+1})) \\
+  &- x_{t+1}\mathbf{f^{ext}_{t+1}} 
+\end{aligned}$$
+
+其中 
+
+$$\hat{x} = x^t + hv^t + h^2M^{-1}(f_e + \mathbf{f^{ext}_{t}})$$
 
 ## Obstacle Avoidance IPC
 直接加上 Obstacle Collision 的惩罚项相当于给每个障碍物添加了一个天然存在的排斥力的势场（等同于直接给障碍物加上了一个 $\hat{d}$ 很大的 $b(d(x))$）：

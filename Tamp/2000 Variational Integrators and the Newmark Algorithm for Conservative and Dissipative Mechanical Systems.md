@@ -217,11 +217,16 @@ $$f^{int}_{k+1} = \frac{\partial V_k(q_{k+1})}{\partial q_{k+1}}$$
 
 根据 $q_{k+1} = q_k + h\dot{q}_k + \frac{h^2}{2}\left[(1-2\beta)\ddot{q}_k + 2\beta \ddot{q}_{k+1}\right]$ 有 $\ddot{q}_{k+1} = \frac{q_{k+1}-q^{pre}_{k+1}}{\beta h^2}$，加上得到的内力与 $q_{k+1}$ 之间的直接关系，成功的去掉了 Newton-Euler Equation 中除了 $q$ 以外的变量：
 
-$$M\frac{q_{k+1}-q^{pre}_{k+1}}{\beta h^2} + f^{int}_{k+1} = f^{ext}_{k+1}$$
+$$\begin{aligned}
+    M\frac{q_{k+1}-q^{pre}_{k+1}}{\beta h^2} + f^{int}_{k+1} = f^{ext}_{k+1}\\
+    M\frac{q_{k+1}-q^{pre}_{k+1}}{\beta h^2} + \frac{\partial V_k(q_{k+1})}{\partial q_{k+1}} = f^{ext}_{k+1}
+\end{aligned}$$
 
-然后我们需要上式关于 $q$ 的积分再关于 $t$ 求导，得到等价的 $L$。拆开来看三个部分分别对应了动能、内能、外力做功。那么对应的 $L$ 就是总能量
+上式相当于一个隐式的 Newton-Euler Equation，如果要求其关于 $q_{k+1}$ 的积分，那么原函数即为
 
 $$\frac{1}{2\beta h^2}(q_{k+1}-q^{pre}_{k+1})^TM(q_{k+1}-q^{pre}_{k+1}) + V_k(q_{k+1}) - f_{k+1}^{ext}q_{k+1}$$
+
+Lagrange 的变分原理告诉我们，$q^*$ 应该是积分的驻点，即原函数值应该不变。
 
 那么该 Newton-Euler Equation 对应的 Euler-Lagrange Equation 可以是
 
