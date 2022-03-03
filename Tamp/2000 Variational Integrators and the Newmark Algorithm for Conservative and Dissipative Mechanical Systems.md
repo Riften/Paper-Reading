@@ -16,7 +16,7 @@ Main Idea
 ### 连续形式的 Lagrangian
 **用变分原理根据动势泛函求得的 Trajectory 和 Newton-Euler Equation 是等价的**
 
-定义 Lagrangian （动势）
+定义 Lagrangian （动势，拉格朗日量）
 
 $$L(q, \dot{q}) = T(q, \dot{q}) - U(q)$$
 
@@ -29,11 +29,13 @@ Principle of Least Action 告诉我们，实际的 trajectory $q^*$ 是最小化
 
 $$\int_{0}^{T}L(q^*(t), \dot{q}^*(t), t)dt \leq \int_{0}^{T}L(q^*(t) + \epsilon q(t), \dot{q}^*(t) + \epsilon q^*(t), t)dt$$
 
-而 Hamilton's Principle 进一步把该定理表述为**变分原理**：任意两点之间真实运动路线的动势的时间积分为驻值。
+这里的 $S=\int_{0}^{T}L(q(t), \dot{q}(t), t)dt$ 称为 action （作用量）。
 
-$$\delta \int_{0}^{T}L(q(t), \dot{q}(t), t)dt = 0$$
+Hamilton's Principle 进一步根据**变分原理**，S取极值的必要条件是：
 
-求解上式等价于求解 Euler-Lagrange Equation
+$$\delta \int_{0}^{T}L(q(t), \dot{q}(t), t)dt = \int_{0}^{T}\left[\frac{\partial L}{\partial q}\delta q + \frac{\partial L}{\partial \dot{q}}\delta{\dot{q}}\right]dt = 0$$
+
+上式是必要条件的积分形式，S取极值的必要条件的微分形式是 Euler-Lagrange Equation
 
 $$\frac{\partial L}{\partial q} - \frac{d}{dt}[\frac{\partial L}{\partial \dot{q}}] = 0$$
 
@@ -222,7 +224,11 @@ $$\begin{aligned}
     M\frac{q_{k+1}-q^{pre}_{k+1}}{\beta h^2} + \frac{\partial V_k(q_{k+1})}{\partial q_{k+1}} = f^{ext}_{k+1}
 \end{aligned}$$
 
-上式相当于一个隐式的 Newton-Euler Equation，如果要求其关于 $q_{k+1}$ 的积分，那么原函数即为
+> 上式的含义：本质上是 Newton-Euler Equation 的一个近似，而 Newton-Euler Equation 和**动势取极值的必要条件的微分形式 Euler-Lagrange Equation**是一致的。
+
+上式相当于一个隐式的 Newton-Euler Equation，同时本身就是一个 Euler-Lagrange Equation。即上式对所有 t 恒成立 $\Leftarrow$ S 取极值 $\Leftrightarrow$ 得到实际的 trajectory。
+
+但是上式并不好求，另一种思路是求积分形式的 $\delta S = 0$，即下式：
 
 $$\frac{1}{2\beta h^2}(q_{k+1}-q^{pre}_{k+1})^TM(q_{k+1}-q^{pre}_{k+1}) + V_k(q_{k+1}) - f_{k+1}^{ext}q_{k+1}$$
 
@@ -237,3 +243,5 @@ $$f(q_{k+1}) = \frac{1}{2 h^2}(q_{k+1}-q^{pre}_{k+1})^TM(q_{k+1}-q^{pre}_{k+1}) 
 $$\argmin_{q_{k+1}} f(q_{k+1})$$
 
 得到。
+
+> Incremental Potential 给出了一个通用的直接通过求能量函数极值的 integrator。在近似动能的时候利用了 Newmark Method 使得近似比线性近似更精确，并且给出了包含耗散势能和保守势能的近似 $V_k(q_{k+1}) = V(q_{k+1}) + h\psi\left(q_{k+\sigma}, \frac{q_{k+1} - q_k}{h}\right)$

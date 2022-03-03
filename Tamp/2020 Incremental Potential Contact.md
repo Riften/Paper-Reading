@@ -22,6 +22,8 @@ $$S(x) = \int_0^T\Large(\normalsize \frac{1}{2}\dot{x}^TM\dot{x} - \Psi(x) + x^T
 
 IPC直接计算可弹性形变的 mesh model，model 的每个顶点的位置函数 $x(t)$ 是定义域。
 
+> x 是顶点，那 $M$ 怎么定义？
+
 ## Incremental Potential
 [Variational Integrators and the Newmark Algorithm for Conservative and Dissipative Mechanical Systems](./2000%20Variational%20Integrators%20and%20the%20Newmark%20Algorithm%20for%20Conservative%20and%20Dissipative%20Mechanical%20Systems.md) 中从 Newmark Method 出发，给出了一个可行的 Integrator
 
@@ -78,8 +80,114 @@ $$\lambda_k = \frac{\kappa}{h^2}\frac{\partial b}{\partial d_k}$$
 
 ## Intersection-aware Line & CCD
 - [Note: Optimization (Newton Method)](./Marc%20Toussaint/Optimization%2001.md)
+- [DigitalRune Doc: Continuous Collision Detection](https://digitalrune.github.io/DigitalRune-Documentation/html/138fc8fe-c536-40e0-af6b-0fb7e8eb9623.htm)
 
-基本的想法是：先用 Continuous Collision Detection 找到一个梯度方向上的最大步长，然后在做 back-tracking line search。
+基本的想法是：先用 Continuous Collision Detection 找到一个梯度方向上的最大步长，然后在做 back-tracking line search。同时为了保证 line search 期间保持 intersection free，IPC 对每一个 step size 进行一个 CCD query，如果发生碰撞，就进一步缩小 step size
+
+### Continuous Collision Detection
+和 Discret Collision Detection 对应，对于相邻的两个模拟帧，计算出两帧之间发生的 collision，而不是只在帧本身计算 collision，这有两个核心作用
+- 计算出发生 collision 的时间
+- 防止穿模
+
+> 对于一些简单场景 CCD 是否是必须的？理论上来说只要 step size 的初始步长加以限制，即使离散的 Collision Detection 也能胜任大部分情形。而且会极大的提升效率。
+
+## Friction
+Incremental Potential 定义的势能项包含保守力势能和耗散势能
+
+$$V_k(q_{k+1}) = V(q_{k+1}) + h\psi\left(q_{k+\sigma}, \frac{q_{k+1} - q_k}{h}\right)$$
+
+这里需要做的就是正确写出摩擦导致的耗散能量 $\psi$。
+
+### 朴素的变分形式的 Friction
+最简单摩擦定律是 The Coulomb Friction Law: $F_t = \mu F_n$，这里则给出了一个摩擦力的变分形式。（凑出来的满足摩擦力定律的极值形式）
+
+> Maximal Dissipation Principle?
+
+摩擦力 $\beta \in \mathbb{R}^2$ 表示成以下函数极值条件
+
+$$\argmin_\beta \beta^Tv_k ~~~~ \text{s.t.   } ||\beta||\leq \mu\lambda_k$$
+
+- $\beta$：切向的摩擦力，由于限制了是垂直于 contact force，所以是个二维向量
+- $v_k$：primitive 的切向相对速度，同样是二维向量。
+
+这里的 $\beta^T v_k$ 是两个向量的内积。显然在 $||v_k||>0$ 时，上式结果为 $\beta = -\mu\lambda_k \frac{v_k}{||v_k||}$，即和 $v_k$ 方向相反的动摩擦力。当 $||v_k|| = 0$ 时，$\beta$ 为 contact force 切向上的一定范围的静摩擦力。因此上式是满足 Coulomb Friction Law 的。
+
+### 参数化
+Friction 的变分形式需要是一个关于 $x$ 的函数。本文中变量 $x$ 的维度根据 primitive 的类型不同可能是 $3n, n=1,2,3$。
+
+将 Friction 表述为 $x$ 函数的核心是定义一对正交基 $T_k(x) \in \mathbb{R}^{3n\times 2}$，它将 x 的滑动位移保留垂直于 contact force 的分量
+
+$$u_k = T_k(x)^T (x-x^t) \in \mathbb{R}^2$$
+$$v_k = \frac{u_k}{h} \in \mathbb{R}^2$$
+
+> $T_k$ 是怎么（延迟）更新的？是否可以直接求 $\nabla_x T_k$？
+
+最后算出来的 contact force 也需要保持一样的参数维度，所以用 $T_k$ 映射回 $x$ 的空间
+
+$$F_k(x,\lambda) = T_k(x)\argmin_\beta \beta^Tv_k ~~~~ \text{s.t.   } ||\beta||\leq \mu\lambda_k$$
+
+但这个定义并没有找到合适的势能，而且也不是连续的，所以不能直接放在 IPC 框架使用。
+
+### Smoothed Static Friction
+- 连续性：和 barrier function 类似的处理方法，先把摩擦表达为 nonsmooth function，然后将其在一定精确度内近似为平滑函数
+
+只要 $v_k$ 不是 0，$F_k$ 总是反向，所以首先把 $F_k$ 重新写成下面形式
+
+$$F_k = -\mu\lambda_kT_k(x)f(||u_k||)s(u_k)$$
+- s(u_k) 是摩擦力方向。当 $||u_k|| > 0$ 时，$s(u_k)$ 是 $u_k$ 方向上的2维单位向量 $s(u_k) = \frac{u_k}{||u_k||}$ 。当 $||u_k|| = 0$ 时，$s(u_k)$ 是切向上任意方向的2维单位向量。
+- $f(||u_k||)$ 是摩擦力大小系数，当 $||u_k||>0$ 时为 1，否则是 $[0,1]$ 之间的值。
+
+平滑 $f$ 的基本想法是，在位移很小的时候，使 $f$ 逐渐从 1 减小到 0.$f$ 的平滑形式是 $f_1$:
+
+$$\begin{aligned}
+  f_1(y) = \left\{\begin{array}{ll}
+    -\frac{y^2}{\epsilon_v^2h^2} + \frac{2y}{\epsilon_v h},&y\in(0,h\epsilon_v)\\
+    1, & y\geq h\epsilon_v
+  \end{array}\right.
+\end{aligned}$$
+- $\epsilon_v$ 是摩擦相对速度的一个小量
+- 当位移超过 $h\epsilon_v$（$h$ 是 time step，位移超过$h\epsilon_v$ 即速度超过 $\epsilon_v$）,认为发生位移，$f$ 为 1
+- 当位移不到 $h\epsilon_v$ 的时候，$f$ 根据一个二次函数衰减到 0，该二次函数在 $h\epsilon_v$ 取得极大值 1，从而保证了一阶连续。
+- 由于 $f$ 最终收敛到 0，所以能直接 $s(u_k) = \frac{u_k}{||u_k||}, 0$
+
+### Dissipative Potential
+- 势能定义：上述定义中用到了 contact force $\lambda$ 和正交基 $T_k$，这些都是变化量。为了避免在牛顿法更新时候计算 $\nabla_x T$，采用延迟更新 $\lambda$ 和 $T_k$ 值的方法。即先用 $\lambda_{k,t}$ 算出来 $x_{t+1}$，然后更新 $\lambda_{k,t+1}$
+
+Incremental Potential 的原本定义中，势能项为
+
+$$\begin{aligned}
+    V_k(q_{k+1}) &= V(q_{k+1}) + h\psi\left(q_{k+\sigma}, \frac{q_{k+1} - q_k}{h}\right),\\
+    q_{k+\sigma} &= (1-\sigma)q_k + \sigma q_{k+1},~~~~\sigma\in[0,1]
+\end{aligned}$$
+
+这里我们需要根据前面经过平滑的摩擦力，给出对应的耗散势能 $\psi\left(q_{k+\sigma}, \frac{q_{k+1} - q_k}{h}\right)$。
+
+但是本文没有找到只用 $x$ 为变量的耗散势能定义方式，依然需要依赖于 $T_k(x)$ 和 $\lambda_k(x)$ 作为额外的假设已知。首先经过平滑之后的 $F$ 为
+
+$$F_k = -\mu\lambda_kT_k(x)f_1(||u_k||)\frac{u_k}{||u_k||}$$
+
+最直接的方法是找到函数 $T_k(x)$ 和 $\lambda_k(x)$，但是那样的话上式就不容易积分了。因此这里使用预先计算的（例如从上一个 time step 计算）$\lambda^n, T^n$ 定义 lagged friction force $F_k(x, \lambda_k^n, T_k^n)$。
+
+有了摩擦力，本文对耗散势能的定义很简单，即摩擦力关于 $x$ 的原函数：
+
+$$D_k(x) = \mu \lambda_k^nf_0(||u_k||)$$
+
+- $f_0$ 为 $f_1$ 的原函数，同时满足 $f_0(\epsilon_vh) = \epsilon_vh$ (好像就是个很随意的值)
+
+则有 $F_k(x) = -\nabla_xD_k(x)$，总的 friction potential 为 $D(x) = h^2\sum_{k\in\mathcal{C}} D_k(x)$ （？？？
+
+### Friction 总结
+Friction **大小**被近似为
+
+$$F_k = -\mu\lambda_kf_1(x)$$
+- $\mu\lambda_k$ 为滑动摩擦力
+- $f_1(x)$ 是一个近似项，在相对移动很小的时候平滑的衰减到0，相对移动达到一定值的时候为1。
+
+摩擦力的原函数被当作耗散势能
+
+$$D_k(x) = \mu \lambda_k^nf_0(||u_k||)$$
+
+为了方面计算梯度，$\lambda_k^n$ 被看作是定值，延迟更新。
 
 ## neo-Hookean material
 ### FEM & MPM
@@ -91,3 +199,7 @@ Finite Element Method (FEM) 有限单元法。
 
 
 ## Implementation
+关键问题：
+- $\hat{x}$ 的计算，为什么定义中用的是 $f_e$ 而不用加速度？
+- $\lambda, T_k$ 的更新方式？
+- $M$ 用的是什么？柔性物体的 Primitive 的 Inertial Matrix 是怎么定义的？
