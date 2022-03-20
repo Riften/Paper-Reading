@@ -33,7 +33,8 @@ $$q_{k+1} = \argmin_{q_{k+1}}\frac{1}{2 h^2}(q_{k+1}-q^{pre}_{k+1})^TM(q_{k+1}-q
 - $q^{pre}_{k+1} = q_k + h\dot{q}_{k} + \frac{h^2}{2}[(1-2\beta)\ddot{q}_{k}]$，类似的定义 $\hat{x} = x^t + hv^t + h^2M^{-1}f_e$
 - $V_k$ 为势能+耗散能，等价于这里的 $\Psi(x) - x^Tf_d$
 
-> 为什么这里直接用了 $f_e$ 而不是用求出来的上一步的 $\ddot{q}_k$？实际实现里面这个 $f_e$ 是怎么求的？理论上这应当是 环境中的保守力 + barrier 求导得到的 contact force + 摩擦力。
+> 为什么这里直接用了 $f_e$ 而不是用求出来的上一步的 $\ddot{q}_k$？。
+> 在实际的 IPC 实现中，这里直接使用了重力加速度 $g$，而不是 $\ddot{q}$。这是因为，IPC 是将所有物体看作一整个系统，动能、速度、加速度等概念都是所有物体的和。在这个基础上，contact force 和 friction 都是内力的一部分，他们的和加速度应该为 0。所以这里的 $f_e$ 仅仅包含外力，在模拟过程中仅仅包含重力。
 
 $$\begin{aligned}
     &E(x, x^t, v^t) = \frac{1}{2}(x-\hat{x})^TM(x-\hat{x}) - h^2x^Tf_d + h^2\Psi(x)\\
@@ -122,7 +123,7 @@ $$v_k = \frac{u_k}{h} \in \mathbb{R}^2$$
 
 > $T_k$ 是怎么（延迟）更新的？是否可以直接求 $\nabla_x T_k$？
 
-最后算出来的 contact force 也需要保持一样的参数维度，所以用 $T_k$ 映射回 $x$ 的空间
+最后算出来的 friction force 也需要保持一样的参数维度，所以用 $T_k$ 映射回 $x$ 的空间
 
 $$F_k(x,\lambda) = T_k(x)\argmin_\beta \beta^Tv_k ~~~~ \text{s.t.   } ||\beta||\leq \mu\lambda_k$$
 
@@ -197,6 +198,7 @@ Finite Element Method (FEM) 有限单元法。
 
 ## Intersection-aware line search
 
+## Distance Compututation
 
 ## Implementation
 关键问题：
