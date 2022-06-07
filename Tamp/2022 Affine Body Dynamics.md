@@ -1,0 +1,2 @@
+# Affine Body Dynamics: Fast, Stable & Intersection-free Simulation of Stiff Materials.
+总体上是对 Rigid-IPC 的改进。Rigid IPC 在实现上就有着一个核心矛盾，在讨论的模型已经变为 rigid 的情况下，依然沿用 IPC 的总体框架，以至于即使有线程的仿射变换，也要把仿射变换拆散，在用原本的框架求解。

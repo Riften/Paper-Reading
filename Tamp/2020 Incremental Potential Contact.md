@@ -66,7 +66,8 @@ $$\begin{aligned}b(d,\hat{d})=\left\{\begin{array}{lr}
 
 定义 $\mathcal{C}$ 为所有不相邻的 点-面 / 边-边 primitive pair，原本最小化 IP 变成了这里的 Barrier-Augmented Incremental Potential
 
-$$B_{t}(x) = E(x, x^t, v^t) + \kappa\sum_{k\in\mathcal{C}}b(d_k(x))$$
+$$B_{t}(x) = E(x, x^t, v^t) + \kappa\sum_{k\in\mathcal{C}}b(d_k(x))\\
+x^{t+1} = \argmin_{x^{t+1}} B_t(x^{t+1})$$
 
 上式中，如果将整体看作一个 Incremental Potential，Barrier Function 在这里也充当了一个势能项，该项在两个 primitive 接触的时候为无穷大。
 
@@ -190,6 +191,11 @@ $$D_k(x) = \mu \lambda_k^nf_0(||u_k||)$$
 
 为了方面计算梯度，$\lambda_k^n$ 被看作是定值，延迟更新。
 
+$$
+  B_t(x) = \frac{1}{2}(x-\hat{x})^TM(x-\hat{x}) - h^2x^Tf_d + h^2\Psi(x) + \kappa\sum_{k\in\mathcal{C}}b(d_k(x)) + \sum_{k\in\mathcal{C}}\mu \lambda_k^nf_0(||u_k||)\\
+  x^{t+1} = \argmin_x B_t(x)
+$$
+
 ## neo-Hookean material
 ### FEM & MPM
 - [Wikipedia: Finite Element Method](https://en.wikipedia.org/wiki/Finite_element_method)
@@ -199,6 +205,48 @@ Finite Element Method (FEM) 有限单元法。
 ## Intersection-aware line search
 
 ## Distance Compututation
+- [stackoverflow: minimum distance between two triangles](https://stackoverflow.com/questions/53602907/algorithm-to-find-minimum-distance-between-two-triangles)
+- [edge segments distance](https://zalo.github.io/blog/closest-point-between-segments/)
+- 有没有可能只计算点面距离？或者点点距离？
+
+**IPC 的距离计算依赖于cache复用、条件判断，对 JAX 来说很难实现的高效。考虑使用 PQP 算法**
+
+首先需要明确，IPC 中的 Distance 只需要保证不穿模即可。从这个角度来说，对于两个 mesh model，IPC 实际上只需要保证任意两个面片之间的距离符号不变。
+
+计算两个面片之间的距离 $\Leftrightarrow$ 计算两个面片上距离最近的两个点之间的距离。
+
+这两个点有两种可能
+- 没有点在面片内，那么这时候实际上是计算最小的 edge-edge distance
+- 有点在面片内，这时候等价于计算最小的 point-triangle 距离。
+
+
+```cpp
+void construct_constraint_set(
+  const Candidates& candidates, // 发生碰撞的 primitive 的 index
+  const Eigen::MatrixXd& V_rest,
+  const Eigen::MatrixXd& V, // 顶点坐标
+  const Eigen::MatrixXi& E, // Edge 列表，由 vertex index 指定
+  const Eigen::MatrixXi& F, // Face 列表，同样是 vertex index 指定
+  double dhat, // barrier function 参数
+  Constraints& constraint_set, // return reference
+  const Eigen::MatrixXi& F2E, // 每个 Face 对应的 Edge index
+  double dmin // Primitive 间的最小距离？
+)
+```
+函数的最终目的是计算 broad phrase 过程检测到的可能发生碰撞的 primitive 之间的距离，保留小于 dhat 的 primitive pair 作为 constraint。
+
+分别处理 Edge-Vertex, Edge-Edge, Face-Vertex Candidates
+- 对于 Edge-Vertex Candidates
+  - 判断距离类型 point_edge_distance_type，然后针对不同的类型调用 point_edge_distance 分类计算
+    - 对于点 $p$ 和边 $e(e_0, e_1)$ 计算投影和边长的比值
+      $$r = \frac{(e_1-e_0)\cdot(p-e_0)}{|e|^2}$$
+      - $r<0$ 说明 $p$ 离 $e_0$ 比较近，所以计算 $|p-e_0|$ 作为距离。
+      - $r>1$ 说明 $p$ 离 $e_1$ 比较近，所以计算 $|p-e_1|$ 作为距离
+      - 最后一种情况，距离最近的点在 $(e_0,e_1)$ 之间，计算 $d = \frac{|(e_0-p) \times (e_1-p)|^2}{|(e_1-e_0)|^2}$
+  - 如果计算出的距离小于 $d^2 < (d_{min} + \hat{d})^2$ 则根据类型不同添加 constraint，前两种情况添加 vertex-vertex constraint，最后一种情况添加 vertex-edge constraint。**当前 IPC 实现中存在距离的重复计算，以 vertex-edge constraint 为例，并没有在计算后保留距离计算结果，而只保留了发生碰撞的 edge-vertex candidates，在计算能量时重复计算距离**
+  - 将第三种情况 cache 到 map 中，在后续计算 edge-edge distance 时复用
+- 对于 Edge-Edge Candidates 和 Face-Vertex Candidates 也是类似的实现，只是分类讨论的类型多得多。
+
 
 ## Implementation
 关键问题：
