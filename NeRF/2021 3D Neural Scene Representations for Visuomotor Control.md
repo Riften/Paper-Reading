@@ -3,4 +3,11 @@
 
 另外，为了让模型可以从没见过的视角的图片一样的到 latent state，额外增加了一个 decoder。decoder 负责将 state 重新解码为 image。当输入一个没见过的视角的图片的时候，通过计算 decoder 输出和 encoder 输入之间的 L2 distance，将该 distance 的梯度传播到 state 上，更新 state 来最小化 distance，从而得到没见过的视角下图片对应的 state。文中把这个模块称为 auto-decoding inference-via-optimization framework.
 
+在 Planning 部分直接使用了现成的 planning 算法，包括
+- random shooting
+- gradient-based trajectory optimization
+- cross-entropy method
+- model-predictive path integral planner
+
 ## 3D Aware Scene Representation Learning
+Neural Radiance Field (NeRF) 最初的作用是用来作渲染。
