@@ -1,0 +1,2 @@
+# GarmentNets: Category-Level Pose Estimation for Garments via Canonical Space Shape Complemention
+对每种类型的衣服，用 Winding Number Field (WNF) 构建其正则化的表示（canonical space）。然后对于衣服的稀疏化的点云，用一个映射网络将其中的每个点映射到 canonical space，并在该空间中补全完整的衣服。将补全后的衣服映射回原本的观测空间，就的到了衣服完整的 mesh。
