@@ -8,3 +8,6 @@ Point Cloud 数据的特点：
 ![](../imgs/pointnet.png)
 
 上图中 n 是 point cloud 中点的数量，每个点的输入数据是三维坐标，所以输入的维度是 $n\times 3$。
+
+## PointNet++
+

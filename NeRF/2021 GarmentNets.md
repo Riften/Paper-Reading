@@ -37,4 +37,6 @@ $$w(q) = f(q;\psi(x))$$
 WNF 值同样用于监督训练 Feature Scattering 部分的 3D CNN。
 
 ## Implementation
+整个模型不是 end-to-end 训练的，训练分为两个部分：训练 PointNet2，训练整体的 Pipeline
 
+PointNet2NOCS
