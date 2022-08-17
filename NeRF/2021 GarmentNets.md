@@ -36,7 +36,36 @@ $$w(q) = f(q;\psi(x))$$
 
 WNF 值同样用于监督训练 Feature Scattering 部分的 3D CNN。
 
-## Implementation
+----
+
+# Implementation
 整个模型不是 end-to-end 训练的，训练分为两个部分：训练 PointNet2，训练整体的 Pipeline
 
-PointNet2NOCS
+## Data
+- pos: $(n\times 3)$，点云坐标
+  - 缩放：每个类型衣物有固定的缩放系数，其值根据该衣服放在单位长度的NOCS空间中的缩放决定。点云数据都会根据该系数进行坐标的缩放。
+  - 平移：模型的姿态都是抓取姿态，会平移到抓点为原点。
+  - 旋转：数据增强，会对衣服延 Z 轴作旋转。需要注意的是由于抓点为原点，所以点云的 Z 坐标几乎为负值。
+- x: $(n\times 3)$，rgb 颜色（？？？？为啥还要 rgb）
+
+## PointNet2NOCS
+输入 `data.pos` 与 `data.x`，输出对每个坐标的 nocs 类别预测。
+
+**forward**
+  - **sa1/2/3_module**: PointNet++ 的 Set Abstraction。输入 rgb颜色、坐标、batch index。输出
+
+
+<!--
+$$
+        \mathbf{x}^{\prime}_i = \gamma_{\mathbf{\Theta}} \left( \max_{j \in
+        \mathcal{N}(i) \cup \{ i \}} h_{\mathbf{\Theta}} ( \mathbf{x}_j,
+        \mathbf{p}_j - \mathbf{p}_i) \right),
+        $$
+
+where :$$\gamma_{\mathbf{\Theta}} $$ 
+and
+$$h_{\mathbf{\Theta}}$$
+denote neural networks, *.i.e.* MLPs
+$$\mathbf{P} \in \mathbb{R}^{N \times D}$$
+defines the position of each point.
+--->
