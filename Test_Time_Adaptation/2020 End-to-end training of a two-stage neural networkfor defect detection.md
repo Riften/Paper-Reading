@@ -19,3 +19,11 @@ $$\mathcal{L}_{total} = \lambda\cdot \mathcal{L}_{seg} + \delta\cdot(1-\lambda)\
 $$\lambda = 1-\frac{\text{current\_epoch}}{\text{total\_epoch}}$$
 
 （这不就是分开训练...）
+
+## Loss Weighting for Positive Pixels
+探伤数据集的 label mask 通常很粗略，而不是 pixel accurate。例如一条划痕，在 mask 上可能是一个很宽的长方形。因此本文在计算 loss 的时候，对于 mask 中心的像素给予更高权重，而对于边缘像素给予低权重。权重最小值出现在 mask 边缘，而对于原本非 mask 的区域权重值反而比 mask 边缘大。这是因为 false-positive 比边缘不准确更加严重。
+
+# Implementation
+save_for_backward
+
+loss: nn.BCEWithLogitsLoss, 即一个 sigmoid 层加上一个 BCELoss。
