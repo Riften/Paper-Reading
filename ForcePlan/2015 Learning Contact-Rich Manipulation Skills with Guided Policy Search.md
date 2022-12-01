@@ -1,0 +1,1 @@
+# Learning Contact-Rich Manipulation Skills with Guided Policy Search
