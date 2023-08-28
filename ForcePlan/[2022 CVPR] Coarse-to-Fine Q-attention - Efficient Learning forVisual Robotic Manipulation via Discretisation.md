@@ -1,1 +1,1 @@
-# Coarse-to-Fine Q-attention: Efficient Learning forVisual Robotic Manipulation via Discretisation
+# Coarse-to-Fine Q-: Efficient Learning forVisual Robotic Manipulation via Discretisation
