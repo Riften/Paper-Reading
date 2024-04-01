@@ -3,6 +3,9 @@
 
 在这里一个静态场景不再是用一个3D模型表示，而是用一个连续函数（MPL 网络）表示。函数输入 3D location $\text{x}=(x,y,z)$和观察角度 $(\theta, \phi)$，输出 emitted color $\text{c} = (r,g,b)$ 和 volume density $\sigma$。
 
+Radiance Field:
+$$F: (x,y,z,\theta, \phi)\mapsto (r,g,b,\sigma)$$
+
 ## Model
 ![NeRF](../imgs/NeRF.png)
 模型本身只包含上图的 (a)(b)，即输入 5D vector，输出用于体渲染的 density 和 color。

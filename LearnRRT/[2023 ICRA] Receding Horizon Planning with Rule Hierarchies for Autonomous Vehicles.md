@@ -33,7 +33,7 @@ step function 并不是可微的，所以文中有给出了上述函数的可微
 
 $$R(\rho)\coloneqq \sum_{i=1}^N (a^{N-i+1}\text{sigmoid}(c\rho_i) + \frac{1}{N}\rho_i)$$
 
-原本的 step function 就是二值化函数，这里只是换成了 soft 的二值化，即 sigmoid。
+原本的 step function 就是二值化函数，这里只是换成了 soft 的二值化，即 sigmoid。从这个角度看 c 就相当于控制了 sigmoid 的非线性程度。
 
 ![](../imgs/2023RuleHierarchies.png)
 
