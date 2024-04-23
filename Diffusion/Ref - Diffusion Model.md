@@ -34,14 +34,13 @@ $$
 pseudo-code
 ```python
 def train_loss(denoise_model, x_0, t):
-    # noise 为添加在 x_0 上的总 noise
+    # noise is the total noise on x_0
     noise = torch.randn_like(x_0)
-    # x_noisy 为 x_t
+    # x_noisy is x_t from forward diffusion process
     x_noisy = q_sample(x_0=x_0, t=t, noise=noise)
-    # 直接预测总 noise
+    # predict total noise from x_0 to x_t
     predicted_noise = denoise_model(x_noisy, t)
     loss = F.l2_loss(noise, predicted_noise)
-
     return loss
 ```
 

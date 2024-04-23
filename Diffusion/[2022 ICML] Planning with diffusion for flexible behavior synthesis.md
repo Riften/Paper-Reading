@@ -12,6 +12,8 @@ Diffuser
 首先将 planning 看作是一个 trajectory optimization 问题
 
 $$a_{0:T}^* = \argmax_{a_{0:T}}\mathcal{J}(s_0, a_{0:T}) = \argmax_{a_{0:T}}\sum_{t=0}^Tr(s_t, a_t)$$
+- $\alpha$ action
+- $\mathcal{J}$ objective
 
 然后用一个 diffusion model 来求解这个问题
 

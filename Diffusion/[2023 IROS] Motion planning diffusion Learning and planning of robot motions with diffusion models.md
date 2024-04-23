@@ -1,5 +1,5 @@
 # Motion planning diffusion: Learning and planning of robot motions with diffusion models
-
+[site](https://sites.google.com/view/mp-diffusion)
 用 Diffusion Model 来做 motion planning，本质上还是让 diffusion model 生成 trajectory。
 
 其实验部分主要是和其他生成模型和 trajectory optimization 方法做对比（？？），以及证明 diffusion model 的可用性（而非高效性）。
