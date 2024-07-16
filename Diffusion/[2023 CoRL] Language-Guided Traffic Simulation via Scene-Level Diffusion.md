@@ -145,11 +145,11 @@ Guidance 是直接由 GPT4 输出的 python code。
 - 场景信息（车道、障碍物等）是如何 encode 的？看上去是文中提到的 Map Attention 完成的，具体是怎么做的？
 <!-- - Spatial Attention 中似乎已经有 Temporal Information 了，为什么还要单独的 Spatial Attention？-->
 - relative information 的定义逻辑是什么？
-- 既然 $\tau_t$ 是由 $\tau_a$ 经由 transition function 得到的，为什么模型还要预测 $\tau_t$？以及为什么抛弃了 Diffusion Model 预测 Noise 的泛式而直接预测 Trajectory？
+- 既然 $\tau_t$ 是由 $\tau_a$ 经由 transition function 得到的，为什么模型还要输入 $\tau_t$？以及为什么抛弃了 Diffusion Model 预测 Noise 的泛式而直接预测 Trajectory？
 
 ----
 
 - The article claims that one major challenge in applying LLM is grounding. What does this paper do to address the grounding issue? For example, how is a specific vehicle i in the text corresponding to vehicle i in the code? Or is this issue not addressed at all, leaving the correspondence to be handled by humans?
 - How is scene information (such as lanes and obstacles) encoded? It appears that this is achieved through the Map Attention mentioned in the paper. How exactly is this done?
 - What is the logic behind the definition of relative information?
-- Since $\tau_t$ is obtained from $\tau_a$ via the transition function, why does the model still need to predict $\tau_t$? And why was the paradigm of predicting noise with the Diffusion Model abandoned in favor of directly predicting the trajectory?
+- Since $\tau_t$ is obtained from $\tau_a$ via the transition function, why does the model still need to input $\tau_t$? And why was the paradigm of predicting noise with the Diffusion Model abandoned in favor of directly predicting the trajectory?
