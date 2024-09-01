@@ -24,6 +24,6 @@ FiLM Layer （Feature-wise Linear Modulation） 上次见到还是在 [RT-1](../
 Diffusion Policy 提供了三类处理 Observation 的方案 `diffusion_policy/policy/diffusion_unet_lowdim_policy.py:line121-145`
 - `obs_as_local_cond`：回合 predicted noise (输入) 经过类似的处理，也会和 global_cond 经过 FiLM 来得到 “global conditioned local condition feature”。处理的结果会加到 predicted noise 处理的结果上。这里有个问题是这两部分的 `horizon` 维是不一样大的，本文的做法是直接把 local condition padding 到一样的 horizon 长度，不够的补 0. **实际上本文的方法没有obs_as_local_cond的情况，都是其他两种**
 - `obs_as_global_cond`: global condition 的处理方法和 diffusion step 一样，这才是用的最多的实验设置。大多数实验中 observation steps 为 2。处理方式是直接把 normalized observation 展开为 (batch, obs_steps * obs_dim)，然后和原本的 global feature，也就是 denoise step 拼到一起作为 global feature。
-- inpainting
+- **inpainting**
 
 个人感觉 `obs_as_local_cond` 的做法是完全错的，`horizon` 在这里近似于 spatial 信息（卷积是作用在这个维度上的），把 padding 之后的 local condition (原文中是历史 observation trajectory 作为 local condition) 直接加到 predicted noise 上，相当于人为的在 history horizon step 和 predicted horizon step 之间加了一个关联性。
