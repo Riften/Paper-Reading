@@ -4,6 +4,7 @@ Yuhang Zheng, Xiangyu Chen, Yupeng Zheng, Songen Gu, Runyi Yang, Bu Jin, Pengfei
 （文章的 related work 里面列了很多值得一看的文章，尤其是 distilled feature fields）
 
 - [github](https://github.com/MrSecant/GaussianGrasper)
+- [page](https://mrsecant.github.io/GaussianGrasper/)
 
 类似 [Feature 3DGS](./[2024%20CVPR]%20Feature%203DGS%20Supercharging%203D%20Gaussian%20Splatting%20to%20Enable%20Distilled%20Feature%20Fields.md)，但是解决更具体的 Open-vocabulary robotic grasping 问题。
 

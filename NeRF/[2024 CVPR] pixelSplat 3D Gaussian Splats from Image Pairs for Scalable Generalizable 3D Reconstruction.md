@@ -1,6 +1,8 @@
 # pixelSplat: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction
 David Charatan, Sizhe Lester Li, Massachusetts Institute of Technology, Andrea Tagliasacchi, Vincent Sitzmann, Simon Fraser University, University of Toronto
 
+[page](https://davidcharatan.com/pixelsplat/)
+
 CORE IDEA: **Integrage 3D Gaussians in an end-to-end differentiable system**
 
 Task: generalizable novel view synthesis from sparse image observations. 输入两张图片，以及两张图片对应的 camera pose，和 target view 的 camera pose，输出 Target View 的渲染结果。
@@ -31,8 +33,45 @@ Gaussian Splatting 容易陷入 local minima。Gaussian Splatting 的通常流�
 
 ### Epipolar Attention
 
-给出 Image Pair
+给出 Image Pair $I,\tilde{I}$，从 $I$ 中选取 pixel $u$，该像素对应的射线在 $\tilde{I}$ 上的投影为 epipolar line $l$。
+
+从 $l$ 上采样一系列 pixels $\{\tilde{u}\}\sim \tilde{I}$。对这些像素，计算他们和 $I$ 的 camera origin 的距离 $\tilde{d}_{\tilde{u}}$，根据这些信息来计算 QKV
+
+$$
+\begin{align*}
+s&=\tilde{F}[\tilde{u}_l] \oplus \gamma(\tilde{d}_{\tilde{u}}) \\
+q&=Q\cdot F[u],~~ k_l=K\cdot s, ~~v_l=V\cdot s
+\end{align*}
+$$
+
+$F$ 是对输入的 image encode 得到的 feature，$\gamma$ 是相对另一帧的相机 origin 距离的 positional encoding，将这两部分拼起来得到像素的 feature $s$。用 epipolar line feature $s$ 得到 KV，与另一帧中的单像素的 q 计算 epipolar cross attention。epipolar cross attention 的结果是一个包含了 epipolar line 上的 pixel 的 feature 信息的，conditioned on pixel $u$ 的 softmax attention $\text{Att}(q,\{k_l\}, \{v_l\})$。
+
+该 feature vector 用于更新像素 $u$ 的 feature
+
+$$F[u] += \text{Att}(q,\{k_l\}, \{v_l\})$$
+
+这个做法和 [Is Attention All That NeRF Needs](./[2023%20ICLR]%20Is%20Attention%20All%20That%20NeRF%20Needs.md) 中几乎一样，这里的 $\tilde{I}$ 对应了那里的 target view。
+
+得到 cross attention 之后，还会在 $I$ 的 pixels 之间算 self attention。
+
+$$F+=\text{SelfAttention}(F)$$
+
+**本文也讨论了将上述方法扩展到不只两帧的情形。**
+
+## Gaussian Parameter Prediction
+
+从上面得到的 Feature Map $F$ 中估计 Gaussian Primitives $\{g_k=(\mu_k, \Sigma_k,\alpha_k,S_k)\}_k^K$
+
+本文的基本逻辑是对每个像素 $u$，输入前面得到的 $F[u]$，输出一个 Gaussian Primitive $(\mu,\Sigma,\alpha,S)$
+
+由于前面提到的 GS 的稀疏性和非连续性，直接回归参数，尤其是位置 $\mu$ 的效果不好，容易陷入 local minima。本文的做法是 predict probability density of $\mu$。
 
 ## Question & Ideas
 
-在 wrist-mounted RGBD camera 以及 arm robot 这个设定下，camera pose 以及 depth 都可以是已知的。这时候文中的 Epipolar Attention 部分是不是可以简化？
+- 在 wrist-mounted RGBD camera 以及 arm robot 这个设定下，camera pose 以及 depth 都可以是已知的。这时候文中的 Epipolar Attention 部分是不是可以简化？（本文的 pose 也是已知的）
+- 如何利用 Depth Sensor ? 
+  - 能否 predict 偏差值？会有比较大的 sim-real gap，而且 real 场景中的 depth sensor 有很多信息缺失
+  - 先补全，后直接用作 $\mu$，不合理的丢弃？补全关键词：Depth Completion
+- 如何多帧融合？
+  - 直接进行剪枝？
+  - 进行一次 forward 一次 backward。forward 根据新来的帧更新场景中的 gaussians，并进行必要的剪枝。backward 则直接用 differential volume rendering 修正参数。backward 过程可以对历史上的多帧进行。

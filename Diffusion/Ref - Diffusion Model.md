@@ -131,7 +131,7 @@ $$s(x) = -\nabla_x f(x)$$
 
 energy-based model 意味着 model 本身的建模对象(输出)就是 $s(x)$，想要采样的时候就不是按照 $p(x)$ 采样了，一种可能的采样方式是根据随机的输入 $x_t$，求出该位置的 score estimation $s(x_t)$，然后 move along this direction。当然，直接这样做必然会得到一个 local optimal。
 
-如何采样先放一边，仅仅是 score-based model 本身是无法直接训练的，因为没有合适的 objective，或者说面临 score-matching 的问题
+如何采样先放一边，仅仅是 score-based model 本身是无法直接训练的，因为没有合适的 objective，或者说面临 score-matching 的问题。
 
 $s_\theta(x)$ 的定义是 “似然函数的梯度”，所以最直接的 learning objective 就是和真实似然函数梯度之间的差距，或者叫 score-matching objective
 
