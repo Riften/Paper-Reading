@@ -167,3 +167,5 @@ denoise 的过程原本是向着 $x$ 的分布逐渐靠近，而根据上面的�
 博客中给出了一个很直观的可视化，对于两个 Gaussian 组成的 1D GMM $p(x)$，为其加上另一个 gaussian noise 之后得到 $q_\sigma(\tilde{x})$，$p(x)$ 的 score function (似然函数的梯度) 和 denoise score $\nabla_{\tilde{x}}\log q_\sigma(\tilde{x}|x)$ （按照 $q_\sigma(\tilde{x}|x)\sim \mathcal{N}(x, \sigma^2\cdot I)$ 计算，大概）如下图所示。
 
 ![](../imgs/denoise-2.gif)
+
+## Local and Global Conditioning

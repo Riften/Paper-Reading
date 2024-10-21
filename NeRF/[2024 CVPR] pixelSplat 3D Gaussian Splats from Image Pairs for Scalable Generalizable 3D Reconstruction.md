@@ -75,3 +75,13 @@ $$F+=\text{SelfAttention}(F)$$
 - 如何多帧融合？
   - 直接进行剪枝？
   - 进行一次 forward 一次 backward。forward 根据新来的帧更新场景中的 gaussians，并进行必要的剪枝。backward 则直接用 differential volume rendering 修正参数。backward 过程可以对历史上的多帧进行。
+
+## Implementation
+[github](https://github.com/dcharatan/pixelsplat)
+
+算法实现总体上有两个部分
+- encoder：从 image pair predict gaussians
+- decoder：volume rendering
+
+### encoder
+`src/model/encoder/encoder_epipolar.py:EncoderEpipolar`，核心是实现 epipolar attention

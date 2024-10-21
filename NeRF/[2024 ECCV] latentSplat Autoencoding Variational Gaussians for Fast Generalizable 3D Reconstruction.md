@@ -32,3 +32,11 @@ $$\mathcal{G} = \{(x,S,R,o,c,h_\mu,h_\sigma)_i\}_{1\leq i \leq N}$$
 ## Question
 - 本文以及相关工作经常提到 Novel View，那这些方法能不能直接建模 Novelty？比如能够衡量某个 view 是否在已有的观测范围内？
 - <del>了解一下 Epipolar cross attention，看起来是个算多视角之间 cross attention 的好方法。</del> 就是[Is Attention All that NeRF Needs](./[2023%20ICLR]%20Is%20Attention%20All%20That%20NeRF%20Needs.md) 里面的那个。
+
+## Running code
+
+```bash
+python3 -m src.scripts.render_uncertainty +output_path=rendered_uncertainty checkpointing.load=checkpoints/re10k.ckpt +experiment=re10k
+```
+
+## Implementation
