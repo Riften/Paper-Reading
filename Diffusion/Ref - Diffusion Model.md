@@ -169,3 +169,9 @@ denoise 的过程原本是向着 $x$ 的分布逐渐靠近，而根据上面的�
 ![](../imgs/denoise-2.gif)
 
 ## Local and Global Conditioning
+
+## Deep Diffusion Implicit Model(DDIM)
+- [DDIM Blog](https://medium.com/@akp83540/deep-diffusion-implicit-model-ddim-b2e4e947b606) (写得并不好)
+- [Hugging Face DDIM Schedule](https://huggingface.co/docs/diffusers/v0.31.0/en/api/schedulers/ddim)
+
+> The Deep Diffusion Implicit Model (DDIM) is a type of generative model that accelerates the sampling process of diffusion models by using non-Markovian diffusion processes. This approach allows for faster generation of high-quality images and sounds while maintaining the same training objective as traditional diffusion models.
