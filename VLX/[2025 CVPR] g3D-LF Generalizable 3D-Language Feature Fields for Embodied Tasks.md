@@ -2,6 +2,8 @@
 
 Zihan Wang, Gim Hee Lee
 
+(NUS)
+
 https://github.com/MrZihan/g3D-LF
 
 代码还没有完全公开。[2024 CoRL Sim-to-Real Transfer via 3D Feature Fields for Vision-and-Language Navigation](./[2024%20CoRL]%20Sim-to-Real%20Transfer%20via%203D%20Feature%20Fields%20for%20Vision-and-Language%20Navigation.md) 的后续工作。
@@ -22,3 +24,9 @@ https://github.com/MrZihan/g3D-LF
 - CLIP，DINO 等 2D Foundation Model 所得到的 feature 对 3D spatial relationships 的理解十分有限。
 - Vision 和 Language 之间的 gap
 - 全景和BEV视角的 map 往往需要长序列的信息才能够得到。
+
+
+## Methodology
+
+![](../imgs/g3D_LF.png)
+

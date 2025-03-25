@@ -16,4 +16,6 @@ https://spatialcot.github.io
 
 ### Spatial Coordinate Bi-directional Alignment
 
-
+考虑三类数据
+- $X_v$: 图像
+- $X_{lang}$: 不包含坐标信息的文本 ``
