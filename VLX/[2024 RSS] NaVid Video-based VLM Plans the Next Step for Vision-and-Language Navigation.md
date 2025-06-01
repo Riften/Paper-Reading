@@ -68,3 +68,5 @@ $$E_t^V=P_V(GridPool(X_t))$$
 训练的核心设计是最大化利用有限的 Navigation 数据。
 
 `The available navigational simulation data are still limited in their diversity, authenticity, and scale`
+
+
