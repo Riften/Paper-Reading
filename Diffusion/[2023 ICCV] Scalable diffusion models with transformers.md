@@ -20,6 +20,18 @@ DiT 论文
 $\mu$ 和 $\sigma$ 是每个样本的均值和标准差（在特征维度上计算）。
 $\gamma$ 和 $\beta$ 是可学习的缩放和平移参数（通常是 shape 为 $D$ 的向量）。
 
+更具体来说，对于 2D Feature Map， $i,j$ 为像素位置，c 是 feature dim，则有
+
+$$ \mu_{i,j} = \frac{1}{C} \sum_{c=1}^C x_{i,j,c}, \quad \sigma_{i,j}^2 = \frac{1}{C} \sum_{c=1}^C (x_{i,j,c} - \mu_{i,j})^2 $$
+
+$$ \hat{x}_{i,j,c} = \gamma_c \cdot \frac{x_{i,j,c} - \mu_{i,j}}{\sqrt{\sigma_{i,j}^2 + \epsilon}} + \beta_c$$
+
+经过 LayerNorm 之后，每个空间位置 $(i,j)$ 上的 feature vector 的 L2 norm 会趋于稳定。
+
+$$\sqrt{\sum_{c=1}^C \hat{x}_{i,j,c}^2} \approx \sqrt{\gamma^2 + \beta^2 \cdot C} $$
+
+也就是说所有位置上的 feature vector 分布上有区别，但“大小”上接近。
+
 Psudo Code:
 
 ```python
