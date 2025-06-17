@@ -29,5 +29,14 @@
 
 Register 的设计和 CLS Token 类似，是一个 Learnable Token.
 
+![4](../imgs/vit-register-4.png)
 
+需要注意的是，尽管 Register 位置的输出不会产生梯度，但是由于其参与了 self-attention，其实际上是会影响模型输出的。其作用就是字面意义上的寄存器。
 
+本文前半部分说明模型需要额外的位置来寄存信息，后半部分发现可以认为提供这样的寄存器。
+
+## 其他
+
+也有最新的研究指出寄存器不一定要在训练阶段就使用，也可以直接在 inference 的时候通过一些手段做到类似寄存token的效果
+
+[2025 arxiv] Vision Transformers Don't Need Trained Registers
