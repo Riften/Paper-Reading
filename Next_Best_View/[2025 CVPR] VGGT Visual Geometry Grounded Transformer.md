@@ -36,6 +36,8 @@ $$
 
 ## Model Architecture
 
+![vggt](../imgs/vggt.png)
+
 ### Feature Backbone
 
 非常直接的 Backbone 设计，就是一堆 self-attention only ViT Blocks，外加一点点小设计
@@ -79,6 +81,10 @@ $g_i\in\mathbb{R}^9$ , camera intrinsics and extrinsics , $[\mathbf{q, t, f}]$ ,
     - 按照 Layer 4 (最深层) → Layer 3 → Layer 2 → Layer 1 (最浅层) 的顺序将其融合，方式就是三次带残差的卷积，并且在每一次之后都做一次线性插值上采样到下一层的分辨率。
 - 最后用卷积做输出，其中最后一层卷积是 1x1 卷积，即线性层。
 
+在 DPT 的使用上，本文也做了额外的设计，具体来说，
+
+- 原则上每个 frame 的 tokens 都需要独立 unpatchfy 然后输入 DPT，这相当于输入 `(B, N, 1024, H', W')`，其中 `H'=W'=518/14=37`，`N` 为不确定的图片数量。
+- 在 N 很大的时候，直接这样输入会占用大量显存，为了平衡显存使用和计算速度，VGGT 使用 chunk_size=8，即每次最多处理 8 张图片。在显存比较富裕的时候当然可以修改该参数以加速训练。多次输入和一次性输入，在 torch 的计算图得到的梯度是等价的，但是同时存在的中间变量会变少，以减少显存使用。
 
 ## Discussions
 
@@ -90,4 +96,6 @@ $g_i\in\mathbb{R}^9$ , camera intrinsics and extrinsics , $[\mathbf{q, t, f}]$ ,
 
 但是使用 backbone 使得训练过程更加稳定，且对于训练的超参数更加不敏感。
 
+2. 代码质量
 
+目前看来 VGGT 的代码质量非常非常高，可复用度也很高。
