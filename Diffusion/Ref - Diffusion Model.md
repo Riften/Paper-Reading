@@ -175,3 +175,184 @@ denoise 的过程原本是向着 $x$ 的分布逐渐靠近，而根据上面的�
 - [Hugging Face DDIM Schedule](https://huggingface.co/docs/diffusers/v0.31.0/en/api/schedulers/ddim)
 
 > The Deep Diffusion Implicit Model (DDIM) is a type of generative model that accelerates the sampling process of diffusion models by using non-Markovian diffusion processes. This approach allows for faster generation of high-quality images and sounds while maintaining the same training objective as traditional diffusion models.
+
+## Flow Matching
+
+来自论文 Flow Matching for Generative Modeling。
+
+Flow Matching 中用 $x_0$ 是初始噪声，$x_1$ 是最终图像。
+
+### 物理基础
+
+对于某个向量场 $F$ ，其单位时间内通过某个曲面的量，即为通量。
+
+$$ \Phi = \iint_S \mathbf{F} \cdot \mathbf{n} ~ dS $$
+
+$n$ 为法向，$dS$ 是曲面的微分。
+
+散度则描述向量场在某点处的发散程度，也可以说是通量的局部密度的变化率，他可以看作是通量在体积趋近于0时的通量的极限
+
+$$ \text{div} , \mathbf{F} = \nabla \cdot \mathbf{F} = \lim_{V \to 0} \frac{1}{|V|} \iint_{\partial V} \mathbf{F} \cdot \mathbf{n} , dS $$
+
+在计算上，等于对向量场的分量求偏导的和，或者说等于梯度矩阵的迹（对角元素和）
+
+$$ \text{div} , \mathbf{F} = \nabla \cdot \mathbf{F} = \frac{\partial F_x}{\partial x} + \frac{\partial F_y}{\partial y} + \frac{\partial F_z}{\partial z} $$
+
+补充一下梯度矩阵：
+
+$$ \nabla \mathbf{F} = \begin{bmatrix} \frac{\partial F_x}{\partial x} & \frac{\partial F_x}{\partial y} & \frac{\partial F_x}{\partial z} \\ \frac{\partial F_y}{\partial x} & \frac{\partial F_y}{\partial y} & \frac{\partial F_y}{\partial z} \\ \frac{\partial F_z}{\partial x} & \frac{\partial F_z}{\partial y} & \frac{\partial F_z}{\partial z} \end{bmatrix} $$
+
+### 概率基础
+
+对于随机变量 $z$ ，其符合分布 $z\sim \pi(z)$ ，则对于随机变量 $x=f(z)$ ，则 $x$ 的分布为
+
+$$ p(x) = \pi(z) \cdot \left| \det \left( \frac{\partial z}{\partial x} \right) \right| $$
+
+或者更简单的 1 维情况下为
+
+$$ p(x) = \pi(z) \cdot \left| \frac{dz}{dx} \right| $$
+
+换句话说，导数，（或者 Jacobian 矩阵的行列式），代表了概率密度的缩放。
+
+如果 $f$ 是一个可逆函数，用 $z=f^{-1}(x)$ 做变量替换，则得到了
+
+$$ p(x) = \pi(f^{-1}(x)) \cdot \left| \frac{d}{dx} f^{-1}(x) \right| $$
+
+比如 DDPM 的 Forward Process 过程中，有
+
+$$
+x_t= f(\epsilon) = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1-\bar{\alpha}_t}\epsilon, \epsilon\sim \mathcal{N}(0,1)
+$$
+
+如果应用上面的变量替换公式，算出来的也应当是
+
+
+$$q(x_t) = \mathcal{N}(x_t, \sqrt{\bar{\alpha}_t}x_0, (1-\bar{\alpha}_t)I)$$
+
+
+### Flow
+
+Flow 为将一个随机变量 $x_0$ ，通过一系列可逆变换 $x_{i+1} = f_{i+1}(x_i)$，得到 $x_t$ 的过程称为一个 flow
+
+$$x_t = (f_t \circ f_{t-1} \circ ... f(1))(x_0) = \phi_t(x_0) $$
+
+如果将 t 变为 0~1 的连续值，那么 flow 变换可以写成一个常微分方程 ODE
+
+$$
+\frac{d}{dt}\phi_t(x) = v_t(\phi_t(x)) \\
+\phi_0(x) = x
+$$
+
+这里的 $v_t$ 称为 time-dependent vector field，相当于变换过程在某个特定的 t 时刻的方向场。
+
+整个 flow 的变换过程也是一个不断改变随机变量的分布的过程，可以看作是随着 flow 的变换，x 的分布沿着一条 probability density path $p_0 \rightarrow p_1 \rightarrow ... p_t$ 变换到目标分布。
+
+### 从物理视角看 flow
+
+现在从前面提到的通量和散度的视角看待这个过程，随机变量的分布 $p(x)$ 本身就是一个概率密度场，Flow 变换过程可以看作是一个连续的概率密度变化路径 ( $p_0 \rightarrow p_1 \rightarrow \dots \rightarrow p_t$ )，其变化由时间相关的向量场  $v_t$  决定。
+
+再一对一类比一下
+
+- 随机变量 $x$ 的取值对应了场的空间位置。
+- 概率密度函数 $p(x)$ 描述了不同位置上的密度，即动态的场函数
+- 在时间 $t$ ，概率密度场 $p_t(\phi_t(x))$ 的流动由时间相关的向量场 $v_t(\phi_t(x)) = \frac{d}{dt}\phi_t(x)$ 决定，如果把 $v_t$ 在 x 空间内的某个 manifold 上取积分，就对应了概率密度场在该曲面上的通量。
+- 类比到图像空间（单个像素），$x$ 是该像素的颜色，$p(x)$ 是取不同颜色的概率密度。
+
+而对于某个位置 $x_t$ 处，散度 $\nabla \cdot (p(x_t) v_t(x_t))$ 表示概率密度场的局部变化率。
+
+
+在每个时间步 $t$ ，概率密度的变化可以通过散度公式描述： 
+
+$$ \frac{\partial p(x_t)}{\partial t} = -\nabla \cdot (p(x_t) v_t(x_t)) $$
+
+上述散度公式实际上体现了概率的守恒，即整个系统中，概率密度场可以动态变化，带概率密度的总量是守恒的，概率密度的变化是由概率密度流动引起的，或者说通量引起的。
+
+如果再回到 flow matching 中，上述公式定义了一个 “合法的” 的变化路径应当满足的条件。
+
+
+### Vector Field GT $u_t$ 形式
+
+Flow matching 的基本想法是，用网络预测时间相关向量场 $v_t$ ，用 $v_t$ 表示预测值，$u_t$ 表示 ground truth，learning target 为
+
+$$\mathcal{L}_{FM} = \mathbb{E}_{t,p_t(x)} \lVert v_t(x) - u_t(x)\rVert^2$$
+
+现在的问题是 $u_t$ 未知。但 Flow Matching 首先给出了 $u_t$ 需要满足的形式，即 $u_t$ 满足概率密度守恒，即满足散度公式。
+
+根据前面的散度公式，$u_t(t)$ 是需要满足特定形式的，具体来说，$u_t$ 需要保证对于每一个最终目标场 $x_1$ ，其概率变化路径始终满足散度公式中的守恒关系。
+
+用条件概率公式变化一下概率密度场的散度
+
+$$
+\frac{d}{dx} p_t(x) = -\text{div} \left(\int u_t(x|x_1) p_t(x|x_1)q(x_1)dx_1 \right) = -\text{div}\left( u_t(x) p_t(x) \right)
+$$
+
+即 $u_t$ 需要满足形式
+
+$$
+u_t(x) = \int u_t(x|x_1) \frac{p_t(x|x_1)q(x_1)}{p_t(x)}dx_1
+$$
+
+上面式子相当于说，满足散度守恒的向量场 $u_t$ 受到条件向量场 $u_t(x|x_1)$ 的限制。
+
+### CFM Objective
+
+Flow matching 证明了一件事，优化上述 Flow Matching objective 得到的概率密度变化路径等价于优化以下 Conditional Flow Matching objective
+
+$$
+\mathcal{L}_{CFM} (\theta) = \mathbb{E}_{t,q(x_1),p_t(x|x_1)} \lVert v_t(x) - u_t(x|x_1)\rVert^2
+$$
+
+这是因为他们的梯度相同 $\nabla_{\theta}\mathcal{L}_{FM} = \nabla_{\theta}\mathcal{L}_{CFM}$
+
+
+### Construction of $p_t(x|x_1)$
+
+即构造一类概率密度变化路径，和他对应的条件向量场。
+
+- $p_t(x|x_1)$ 对应了噪声的添加方式
+- $u_t(x|x_1)$ 对应了学习目标
+
+对于概率密度变化路径，本文希望他仍然是 Gaussian conditional paths，即
+
+$$
+p_t(x|x_1) = \mathcal{N} (x| \mu_t(x_1),\sigma(x_1)^2I)
+$$
+
+该路径对应的 flow 为
+
+$$
+\psi_t(x) = \sigma_t(x_1)x + \mu_t(x_1)
+$$
+
+此时的 vector field 可以直接由 $u_t(\psi_t(x)|x_1) = \frac{d}{dt}\psi_t(x)$ 算出来
+
+$$
+u_t(x|x_1) = \frac{\sigma'_t(x_1)}{\sigma_t(x_1)}(x-\mu_t(x_1)) + \mu_t'(x_1)
+$$
+
+### Construction of $u_t(x|x_1)$
+
+不同的 $\mu_t$ $\sigma_t$ 对应了不同类型的 flow。
+
+Variance Exploding Path:
+
+$$p_t(x) = \mathcal{N}(x| x_1, \sigma^2_{1-t}I)$$
+
+即 $\mu_t (x_1) = x_1$。当 $\sigma_0 = 0$ $\sigma_1\gg 1$ 是，$x_0$ 依然是 random noise，这就对应了 score matching 算法的 flow。
+
+Variance Preserving Path:
+
+DDPM
+
+### Optimal Transport conditional Vector Field
+
+$$
+\mu_t(x) = tx_1 \\
+\sigma_t(x) = 1-(1-\sigma_{min}) t
+$$
+
+即线性变化，此时对应的 vector field 为
+
+$$
+u_t(x|x_1) = \frac{x_1 - (1-\sigma_{min})x}{1-(1-\sigma_{min})t}
+$$
