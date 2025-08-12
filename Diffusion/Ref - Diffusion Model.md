@@ -180,7 +180,27 @@ denoise 的过程原本是向着 $x$ 的分布逐渐靠近，而根据上面的�
 
 来自论文 Flow Matching for Generative Modeling。
 
+如果要上手 Flow Matching，可以通过 [flow_matching repo](https://github.com/facebookresearch/flow_matching) 和 [TorchCFM](https://github.com/atong01/conditional-flow-matching)，提供了代码实现、example code、tutorial doc。
+
+其他可选 code base
+
+
+- [Optimal-Flow-Matching](https://github.com/Jhomanik/Optimal-Flow-Matching)
+
+
 Flow Matching 中用 $x_0$ 是初始噪声，$x_1$ 是最终图像。
+
+其最重要的两个公式，一个是定义 vector field 的常微分方程 ODE，flow $\phi_t(x)$ 即为该方程的解。
+
+$$
+dx = u_t(x)dt
+$$
+
+另一个是 连续性方程 continuity equation，规定了 vector field 的约束条件，即将 $p_0$ 在满足连续性方程的情况下变换到 $p_1$
+
+$$
+\frac{\partial p}{\partial t} = - \nabla \cdot (p_t u_t)
+$$
 
 ### 物理基础
 
@@ -236,16 +256,28 @@ Flow 为将一个随机变量 $x_0$ ，通过一系列可逆变换 $x_{i+1} = f_
 
 $$x_t = (f_t \circ f_{t-1} \circ ... f(1))(x_0) = \phi_t(x_0) $$
 
-如果将 t 变为 0~1 的连续值，那么 flow 变换可以写成一个常微分方程 ODE
+如果将 t 变为 0~1 的连续值 Continuous normalizing flows (CNFs) ，那么 flow 变换可以写成一个常微分方程 ODE
 
 $$
 \frac{d}{dt}\phi_t(x) = v_t(\phi_t(x)) \\
 \phi_0(x) = x
 $$
 
+（即 flow $\phi(x)$ 是 vector field 的 ODE $dx = v_t(x)dt$ 的解）
+
 这里的 $v_t$ 称为 time-dependent vector field，相当于变换过程在某个特定的 t 时刻的方向场。
 
+如果 $\phi_t$ 是 Diffeomorphism （微分同胚，可逆函数且逆函数和本身都是连续可微），那么 vector field 也可以写成反函数形式
+
+$$
+v_t(x) = \frac{d}{dt}\phi_t(\phi^{-1}_t(x))
+$$
+
 整个 flow 的变换过程也是一个不断改变随机变量的分布的过程，可以看作是随着 flow 的变换，x 的分布沿着一条 probability density path $p_0 \rightarrow p_1 \rightarrow ... p_t$ 变换到目标分布。
+
+![FlowMatching3](../imgs/FlowMatching3.png)
+
+![FlowMatching2](../imgs/FlowMatching2.png)
 
 ### 从物理视角看 flow
 
@@ -267,7 +299,7 @@ $$ \frac{\partial p(x_t)}{\partial t} = -\nabla \cdot (p(x_t) v_t(x_t)) $$
 
 上述散度公式实际上体现了概率的守恒，即整个系统中，概率密度场可以动态变化，带概率密度的总量是守恒的，概率密度的变化是由概率密度流动引起的，或者说通量引起的。
 
-如果再回到 flow matching 中，上述公式定义了一个 “合法的” 的变化路径应当满足的条件。
+如果再回到 flow matching 中，该方程是 flow matching 各种推导的核心之一，也称为连续性方程，**continuity equation**。一个满足 continuity equation 的 $v_t$ 和初始分布 $\phi_0(x) = x \sim p_0$ 定义了一个完整的 flow。上述公式定义了一个 “合法的” 的变化路径应当满足的条件。
 
 
 ### Vector Field GT $u_t$ 形式
@@ -356,3 +388,109 @@ $$
 $$
 u_t(x|x_1) = \frac{x_1 - (1-\sigma_{min})x}{1-(1-\sigma_{min})t}
 $$
+
+### Implementation: Conditional Flow Matching
+
+注意这里的 Conditional 指的是 Conditioned on Dataset。
+
+Reference: [Flow Matching Guide and Code](https://github.com/facebookresearch/flow_matching), [TorchCFM](https://github.com/atong01/conditional-flow-matching)
+
+Flow Matching 模型建模的是 Vector Field，算法总体上需要考虑以下过程
+
+![FlowMatching](../imgs/FlowMatching.png)
+
+即首先选定概率密度变化路径，然后训练 vector field 来生成该路径。概率密度变化路径的选择取决于两部分
+
+- 初始分布 $q_0$
+- ground truth vector field $u_t$
+
+最简单的情况下，$q_0$ 为 random noise
+
+```python
+x0 = torch.randn_like(x1)
+```
+
+$u_t(x|x_1)$ 只要满足连续性方程 **continuity equation**，且保证根据该方程 push forward 到 t=1 的时候得到 x_1，于是最简单的形式如下所示
+
+```python
+ut = x1 - x0
+```
+
+此时的 learning target （公式来自 Rectified Flow）就变成了简单的
+
+$$
+\mathcal{L}_v = \mathbb{E}_{x0, x1, t} \left[  \lVert v_\theta(x_t, t) - (x_1 - x_0)  \rVert^2 \right]
+$$
+
+那么直接用上述最简单的情况，整个 flow matching 训练和推理流程的 psudo code 大概像下面这样
+
+```python
+def sample_location_and_conditional_flow(x0, x1):
+    # 根据初始分布和目标分布的样本点，
+    # 采样时间步 t
+    t = torch.rand(x0.shape[0]).type_as(x0)
+
+    # 采样输入样本点在时间 t 处对应分布的取值
+    xt = t * x1 + (1-t)x0
+
+    # 计算 ground truth 的 flow field
+    ut = x1 - x0
+
+    return t, xt, ut
+
+
+# Train
+for batch in dataset:
+    # 获取目标分布的样本点
+    x1 = batch[0]
+    y = batch[1] # label
+
+    # 生成训练数据
+    x0 = torch.randn_like(x1)
+    t, xt, ut = sample_location_and_conditional_flow(x0, x1)
+    
+    # 调用模型
+    vt = model(t, xt, y)
+
+
+    loss = torch.mean((vt - ut) ** 2)
+    loss.backward()
+
+# Inference
+with torch.no_grad():
+    num_steps = 5
+    x0 = torch.randn_like(x1)
+    y = random_label()
+    traj = [x0]
+    for i in range(num_steps):
+        t = (i + 1) / num_steps # 1/num_steps, 2/num_steps, ..., 1
+
+        # 调用模型预测 vector field
+        v = model(t, x0, y)
+
+        # 求解 ODE dx = vt * dt
+        # 这里是用的最简单的欧拉法
+        x0 = x0 + v / num_steps
+        traj.append(x0)
+```
+
+用 5 步进行 push forward，在 mnist 手写数字数据集上用上述最简单的 linear vector field 训练后的结果如下所示
+
+![torchCFM2](../imgs/torchCFM2.png)
+
+上述 psudo code 中，ODE 的求解是用的最简单的欧拉法，如果用该方法，在 num_steps=1 的时候并不能得到靠谱的结果。
+
+![torchCFM3](../imgs/torchCFM3.png)
+
+torchCFM package 直接调用了 torchdiffeq package 提供的 ODE 求解器得到以下效果。
+
+![torchCFM1](../imgs/torchCFM1.png)
+
+
+### Implementation: Optimal Transport Conditional Flow Matching (OT-CFM)
+
+torchCFM 的论文 Improving and Generalizing Flow-Based Generative Models with Minibatch Optimal Transport 所实现的核心算法。
+
+### Implementation: RectifiedFlow
+
+FLUX 所基于的模型架构。
