@@ -4,6 +4,8 @@ Shanghai AI Lab.
 
 VLN Foundation Model. 
 
+![InternVLA](../imgs/InternVLA2.png)
+
 亮点：
 
 - 完全使用仿真生成数据训练，但是可以直接迁移到现实场景。
