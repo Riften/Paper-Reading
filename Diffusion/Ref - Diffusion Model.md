@@ -204,7 +204,7 @@ $$
 
 ### 物理基础
 
-对于某个向量场 $F$ ，其单位时间内通过某个曲面的量，即为通量。
+对于某个向量场 $F$ ，其单位时间内通过某个曲面的量，即为通量 Flux。
 
 $$ \Phi = \iint_S \mathbf{F} \cdot \mathbf{n} ~ dS $$
 
@@ -212,11 +212,19 @@ $n$ 为法向，$dS$ 是曲面的微分。
 
 散度则描述向量场在某点处的发散程度，也可以说是通量的局部密度的变化率，他可以看作是通量在体积趋近于0时的通量的极限
 
-$$ \text{div} , \mathbf{F} = \nabla \cdot \mathbf{F} = \lim_{V \to 0} \frac{1}{|V|} \iint_{\partial V} \mathbf{F} \cdot \mathbf{n} , dS $$
+$$ 
+\begin{align*}
+\text{div} ~\mathbf{F}|_{x_0} & = \nabla \cdot \mathbf{F} \\
+&= \lim_{V \to 0} \frac{1}{|V|} \oiint_{\partial S(V)} \mathbf{F} \cdot \mathbf{n} ~ dS \\
+& = \lim_{V \to 0} \frac{1}{|V|} \Phi(S)
+\end{align*}
+$$
+
+上式中 $S(V)$ 是 $V$ 的 boundary，散度 Divergence 描述的是某个点是在产生某个物理量 source，还是消耗某个物理量 sink
 
 在计算上，等于对向量场的分量求偏导的和，或者说等于梯度矩阵的迹（对角元素和）
 
-$$ \text{div} , \mathbf{F} = \nabla \cdot \mathbf{F} = \frac{\partial F_x}{\partial x} + \frac{\partial F_y}{\partial y} + \frac{\partial F_z}{\partial z} $$
+$$ \text{div}  ~\mathbf{F} = \nabla \cdot \mathbf{F} = \frac{\partial F_x}{\partial x} + \frac{\partial F_y}{\partial y} + \frac{\partial F_z}{\partial z} $$
 
 补充一下梯度矩阵：
 
