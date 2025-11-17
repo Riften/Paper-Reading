@@ -38,6 +38,17 @@ Action Expert 的参数量为 300M，而用于理解图像和指令的 PaliGemma
 
 尽管文章没有提，但看起来 action 并没有使用 latent space，而是直接在 joint angle space 下进行 flow matching。
 
+## KV-Cache
+
+Pi0 并没有使用传递 feature/token 的方式来使用 VLM 中的信息，而是直接使用 VLM 中的 KV Cache。更具体来说
+
+1. 每次 forward 会计算并缓存 Paligemma 部分的 KV
+2. 这部分 KV 同时也是 Paligemma 本身理解图像和语言时候使用的 KV，没有使用独立的 $W_K$ , $W_V$ 权重
+3. 每一层的 KV Cache 都会被缓存，而不是只取特定层。
+4. Action Expert 是一个 Denoise 模型，对于不同的 denoise time stamp $\tau$ ，复用相同的 Paligemma KV
+5. Paligemma 和 Action Expert 都参与 VLA 的训练，只是两者都是一个预训练模型，且这两个预训练模型的空间是一致的 (Paligemma 和 Gemma, Paligemma 本质上是将 ViT 的空间投到 Gemma 空间之后得到的模型)。换句话说 $W_K,W_V,W_Q$ 都会正常由操作数据训练。
+
+
 ## Non-VLM Baseline
 
 pi0 额外搭建了一个没有 VLM 的 Baseline Model，只包含 470M 的参数。这个模型也并不是完全 from scratch 训练的，而是使用 DistilBERT 对 language 进行 encode 再处理。

@@ -86,6 +86,14 @@ $g_i\in\mathbb{R}^9$ , camera intrinsics and extrinsics , $[\mathbf{q, t, f}]$ ,
 - 原则上每个 frame 的 tokens 都需要独立 unpatchfy 然后输入 DPT，这相当于输入 `(B, N, 1024, H', W')`，其中 `H'=W'=518/14=37`，`N` 为不确定的图片数量。
 - 在 N 很大的时候，直接这样输入会占用大量显存，为了平衡显存使用和计算速度，VGGT 使用 chunk_size=8，即每次最多处理 8 张图片。在显存比较富裕的时候当然可以修改该参数以加速训练。多次输入和一次性输入，在 torch 的计算图得到的梯度是等价的，但是同时存在的中间变量会变少，以减少显存使用。
 
+#### Tracking
+
+Tracking Head 的目标是找到不同图像之间的同一个点。具体来说，输入一个 query point $\text{y}_j$ 和 query image $I_q$，以及所有图像的 tracking feature $T_i$ ，Tracking Head 可以输出该点在每张图像 $I_i$ 里的像素位置。
+
+Tracking Head 的具体方法参考 [CoTracker](./[2024%20ECCV]%20CoTracker%20It%20is%20Better%20to%20Track%20Together.md)。
+
+本文直接服用 CoTracker，而 CoTracker 所依赖的 Multi-scale Feature Map 直接用 VGGT 的 aggregated token list 经过 DPT 得到。
+
 ## Discussions
 
 本文的一些探讨很有意思
