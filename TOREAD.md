@@ -22,3 +22,8 @@ CTRL-WORLD: A CONTROLLABLE GENERATIVE WORLD MODEL FOR ROBOT MANIPULATION https:/
 - https://internrobotics.github.io/internvla-m1.github.io/ InternVLA-M1，(trace) conditioned vla 的比较开创性的工作
     - [2026 ICLR] ST4VLA: Spatially Guided Training for Vision-Language-Action Models 看上去 InternVLA-M1 没有中，重新投了这个
 - https://www.micdz.cn/Traj2Action/ Traj2Action，同样 trace + vla，但是额外有专门的 trajectory expert 和 action expert
+- https://github.com/IRMVLab/MMTwin MMTwin，预测第一人称动态视角下，人手动作轨迹
+    - Novel Diffusion Models for Multimodal 3D Hand Trajectory Prediction
+    - Uni-Hand: Universal Hand Motion Forecasting in Egocentric Views
+- https://github.com/amap-cvlab/ABot-Manipulation ABot-Manipulation，阿里的 VLA 模型，看上去接入了 3D 信息，并且对 action space 进行了比较独特的设计。
+
